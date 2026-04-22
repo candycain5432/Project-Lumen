@@ -1154,6 +1154,13 @@
               <span class="toggle-thumb"></span>
             </label>
           </div>
+          <div class="settings-row" id="notif-test-row" style="display:none">
+            <div>
+              <div class="settings-row-title">Send Test</div>
+              <div class="settings-row-sub">Fire a sample notification now</div>
+            </div>
+            <button class="btn btn-outline" style="padding:8px 18px;font-size:12.5px" onclick="sendTestNotification()">Test</button>
+          </div>
         </div>
       </div>
 
@@ -1923,6 +1930,29 @@
     notifSub.textContent = enabled
       ? 'You will receive daily saint & verse reminders'
       : 'Saint of the day · verse · prayer reminder';
+    const testRow = document.getElementById('notif-test-row');
+    if (testRow) testRow.style.display = enabled ? 'flex' : 'none';
+  }
+
+  async function sendTestNotification() {
+    if (!('serviceWorker' in navigator)) return;
+    const now = new Date();
+    const easter = getEaster(now.getFullYear());
+    const feast  = getTodaysFeast(now);
+    const litDay = getLiturgicalDayDesc(now, easter);
+    const title  = feast.title ? `✦ ${feast.title}` : '✦ Daily Faith';
+    const body   = `${litDay} — tap to open your daily readings.`;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      await reg.showNotification(title, {
+        body,
+        icon: './icons/icon-192.png',
+        badge: './icons/icon-192.png',
+        vibrate: [200, 100, 200]
+      });
+    } catch (err) {
+      console.error('Test notification failed:', err);
+    }
   }
 
   // Restore saved state
