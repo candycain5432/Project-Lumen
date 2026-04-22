@@ -60,6 +60,7 @@
   [data-theme="dark"] .nav-item.active svg { stroke: #ffffff; }
   [data-theme="dark"] .nav-center .label { color: var(--ink); }
   [data-theme="dark"] .nav-item { color: var(--ink-mute); }
+  [data-theme="dark"] .btn-outline { color: #fff; border-color: rgba(255,255,255,0.55); }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
@@ -892,7 +893,7 @@
   <section class="screen active" data-screen="home">
     <header class="header">
       <div class="header-top">
-        <span class="date-tag">Tuesday · Apr 21</span>
+        <span class="date-tag" id="home-date">Tuesday · Apr 21</span>
         <button class="bell" aria-label="Notifications">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
@@ -900,38 +901,38 @@
           </svg>
         </button>
       </div>
-      <h1 class="greeting">Good morning</h1>
-      <p class="subgreet">Day 12 of Eastertide · St. Anselm</p>
+      <h1 class="greeting" id="home-greeting">Good morning</h1>
+      <p class="subgreet" id="home-subgreet">Day 12 of Eastertide · St. Anselm</p>
     </header>
 
     <div class="scroll fade-in">
       <div class="card verse-card">
         <div class="card-label">Verse of the Day</div>
-        <p class="verse-text">The Lord is my shepherd; I shall not want. He maketh me to lie down in green pastures.</p>
-        <div class="verse-cite">— Psalm 23:1</div>
+        <p class="verse-text" id="verse-text">The Lord is my shepherd; I shall not want. He maketh me to lie down in green pastures.</p>
+        <div class="verse-cite" id="verse-cite">— Psalm 23:1</div>
       </div>
 
       <div class="card feast-card">
         <div class="feast-art" aria-hidden="true"></div>
         <div class="feast-body">
           <div class="feast-label">Feast Day</div>
-          <h3 class="feast-name">St. Anselm</h3>
-          <div class="feast-title">Doctor of the Church</div>
+          <h3 class="feast-name" id="feast-name">St. Anselm</h3>
+          <div class="feast-title" id="feast-title">Doctor of the Church</div>
         </div>
       </div>
 
       <div class="actions-row">
         <div class="action-card">
           <div><div class="action-head">🙏 Morning Prayer</div></div>
-          <button class="btn btn-gold">Begin</button>
+          <button class="btn btn-gold" onclick="openPrayer('Morning Offering')">Begin</button>
         </div>
         <div class="action-card">
           <div>
             <div class="action-head">📿 Rosary</div>
-            <div class="action-title">Joyful Mysteries</div>
+            <div class="action-title" id="rosary-mystery-title">Joyful Mysteries</div>
             <div class="action-meta">20 min</div>
           </div>
-          <button class="btn btn-outline">Start</button>
+          <button class="btn btn-outline" onclick="openRosary()">Start</button>
         </div>
       </div>
 
@@ -989,16 +990,53 @@
       <h1 class="greeting">Prayer</h1>
       <p class="subgreet">Tradition, meditation, and daily devotion</p>
     </header>
-    <div class="placeholder">
-      <div>
-        <div class="placeholder-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2v4"/><circle cx="12" cy="12" r="4"/>
-            <path d="M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-          </svg>
+    <div class="pray-grid">
+      <div class="pray-card featured" onclick="openRosary()">
+        <div class="pray-card-icon">📿</div>
+        <div>
+          <div class="pray-card-title">The Holy Rosary</div>
+          <div class="pray-card-meta" id="pray-mystery-meta">Loading today's mysteries…</div>
         </div>
-        <h2>Prayer library</h2>
-        <p>Rosary, Liturgy of the Hours, Novenas, and more — coming soon.</p>
+      </div>
+      <div class="pray-card" onclick="openPrayer('Morning Offering')">
+        <div class="pray-card-icon">🌅</div>
+        <div class="pray-card-title">Morning Offering</div>
+        <div class="pray-card-meta">Start your day</div>
+      </div>
+      <div class="pray-card" onclick="openPrayer('Evening Prayer')">
+        <div class="pray-card-icon">🌙</div>
+        <div class="pray-card-title">Evening Prayer</div>
+        <div class="pray-card-meta">End your day</div>
+      </div>
+      <div class="pray-card" onclick="openPrayer('Our Father')">
+        <div class="pray-card-icon">✝️</div>
+        <div class="pray-card-title">Our Father</div>
+        <div class="pray-card-meta">The Lord's Prayer</div>
+      </div>
+      <div class="pray-card" onclick="openPrayer('Hail Mary')">
+        <div class="pray-card-icon">🕊️</div>
+        <div class="pray-card-title">Hail Mary</div>
+        <div class="pray-card-meta">Ave Maria</div>
+      </div>
+      <div class="pray-card" onclick="openPrayer('Angelus')">
+        <div class="pray-card-icon">🔔</div>
+        <div class="pray-card-title">Angelus</div>
+        <div class="pray-card-meta">Noon devotion</div>
+      </div>
+      <div class="pray-card" onclick="openPrayer('Act of Contrition')">
+        <div class="pray-card-icon">🙏</div>
+        <div class="pray-card-title">Act of Contrition</div>
+        <div class="pray-card-meta">For reconciliation</div>
+      </div>
+      <div class="pray-card" onclick="openApostlesCreed()">
+        <div class="pray-card-icon">📜</div>
+        <div class="pray-card-title">Apostles' Creed</div>
+        <div class="pray-card-meta">Profession of faith</div>
+      </div>
+      <div class="pray-card" onclick="openPrayer('Glory Be')">
+        <div class="pray-card-icon">✨</div>
+        <div class="pray-card-title">Glory Be</div>
+        <div class="pray-card-meta">Doxology</div>
       </div>
     </div>
   </section>
@@ -1018,15 +1056,52 @@
       <h1 class="greeting">Communion of Saints</h1>
       <p class="subgreet">Lives that point us to Christ</p>
     </header>
-    <div class="placeholder">
-      <div>
-        <div class="placeholder-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-        </div>
-        <h2>Saint index</h2>
-        <p>Browse saints by feast day, patronage, and tradition.</p>
+    <div class="scroll">
+      <div class="saint-today-card">
+        <div class="saint-today-label">Saint of the Day</div>
+        <h2 class="saint-today-name skel" id="saint-today-name">Loading…</h2>
+        <p class="saint-today-title" id="saint-today-title"></p>
+        <button class="btn btn-gold" style="display:inline-block;padding:9px 20px;font-size:12.5px;position:relative;z-index:1" onclick="openSaintWiki()">Read Biography</button>
+      </div>
+
+      <div class="saint-bio-card">
+        <div class="card-label">Biography</div>
+        <p class="saint-bio-text" id="saint-bio-text">Loading…</p>
+      </div>
+
+      <div class="saints-list-label">Notable Saints</div>
+
+      <div class="saint-row" onclick="openSaintDetail('Our Lady, the Virgin Mary','The Blessed Virgin Mary is the Mother of Jesus Christ, the Son of God. Venerated above all saints, she is the Queen of Heaven and the greatest intercessor for humanity. Her fiat — \'Let it be done to me according to thy word\' — changed the history of the world.')">
+        <div class="saint-row-icon">👑</div>
+        <div><div class="saint-row-name">Our Lady, the Virgin Mary</div><div class="saint-row-dates">Queen of All Saints</div></div>
+      </div>
+      <div class="saint-row" onclick="openSaintDetail('Saint Joseph','Saint Joseph was the chaste husband of the Virgin Mary and the foster father of Jesus Christ. A descendant of King David, he was a carpenter in Nazareth. He is the patron of the Universal Church, workers, fathers, and a happy death. His feast days are March 19 and May 1.')">
+        <div class="saint-row-icon">🔨</div>
+        <div><div class="saint-row-name">Saint Joseph</div><div class="saint-row-dates">Patron of the Universal Church · d. ~1 AD</div></div>
+      </div>
+      <div class="saint-row" onclick="openSaintDetail('Saint Peter the Apostle','Saint Peter, born Simon Bar-Jonah, was a fisherman called by Jesus to lead the Apostles. Jesus gave him the keys of the Kingdom of Heaven. He became the first Bishop of Rome and was martyred under Nero around AD 64–68, crucified upside down at his own request.')">
+        <div class="saint-row-icon">⚓</div>
+        <div><div class="saint-row-name">Saint Peter the Apostle</div><div class="saint-row-dates">First Pope · d. ~64 AD</div></div>
+      </div>
+      <div class="saint-row" onclick="openSaintDetail('Saint Paul the Apostle','Saint Paul, born Saul of Tarsus, was a Pharisee who persecuted Christians until a dramatic conversion on the road to Damascus. He became the Apostle to the Gentiles, wrote 13 New Testament epistles, and was martyred in Rome around AD 64–67.')">
+        <div class="saint-row-icon">✍️</div>
+        <div><div class="saint-row-name">Saint Paul the Apostle</div><div class="saint-row-dates">Apostle to the Gentiles · d. ~67 AD</div></div>
+      </div>
+      <div class="saint-row" onclick="openSaintDetail('Saint Francis of Assisi','Saint Francis of Assisi (1181–1226) renounced his wealthy family to live in radical poverty and preach the Gospel. He founded the Franciscan Order, received the stigmata, and is beloved for his deep reverence for all creation. He is the patron saint of animals and ecology.')">
+        <div class="saint-row-icon">🕊️</div>
+        <div><div class="saint-row-name">Saint Francis of Assisi</div><div class="saint-row-dates">Founder of the Franciscans · 1181–1226</div></div>
+      </div>
+      <div class="saint-row" onclick="openSaintDetail('Saint Thomas Aquinas','Saint Thomas Aquinas (1225–1274) was a Dominican friar and the greatest theologian in Catholic tradition. His Summa Theologiae synthesized Aristotelian philosophy with Christian theology. He is the patron of students and universities, and a Doctor of the Church.')">
+        <div class="saint-row-icon">📚</div>
+        <div><div class="saint-row-name">Saint Thomas Aquinas</div><div class="saint-row-dates">Doctor of the Church · 1225–1274</div></div>
+      </div>
+      <div class="saint-row" onclick="openSaintDetail('Saint Teresa of Ávila','Saint Teresa of Ávila (1515–1582) was a Spanish mystic, reformer of the Carmelite Order, and the first woman declared a Doctor of the Church (1970). Her writings on contemplative prayer, especially The Interior Castle, remain foundational guides to Christian mysticism.')">
+        <div class="saint-row-icon">🌹</div>
+        <div><div class="saint-row-name">Saint Teresa of Ávila</div><div class="saint-row-dates">Doctor of the Church · 1515–1582</div></div>
+      </div>
+      <div class="saint-row" onclick="openSaintDetail('Saint Thérèse of Lisieux','Saint Thérèse of Lisieux (1873–1897), called the Little Flower, entered the Carmelite convent at 15 and died of tuberculosis at 24. Her Little Way — doing small things with great love — made her one of the most beloved saints. She is a Doctor of the Church and patron of missions.')">
+        <div class="saint-row-icon">🌸</div>
+        <div><div class="saint-row-name">Saint Thérèse of Lisieux</div><div class="saint-row-dates">The Little Flower · 1873–1897</div></div>
       </div>
     </div>
   </section>
@@ -1066,6 +1141,23 @@
       </div>
 
       <div class="settings-section">
+        <div class="settings-group-label">Notifications</div>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-title">Daily Notifications</div>
+              <div class="settings-row-sub" id="notif-sub">Saint of the day · verse · prayer reminder</div>
+            </div>
+            <label class="toggle" aria-label="Toggle notifications">
+              <input type="checkbox" id="notif-toggle" />
+              <span class="toggle-track"></span>
+              <span class="toggle-thumb"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
         <div class="settings-group-label">About</div>
         <div class="settings-card">
           <div class="settings-row">
@@ -1085,6 +1177,24 @@
 
     </div>
   </section>
+
+  <!-- Content Modal -->
+  <div id="cmodal" class="cmodal" role="dialog" aria-modal="true" onclick="closeCModal()">
+    <div class="cmodal-overlay"></div>
+    <div class="cmodal-sheet" onclick="event.stopPropagation()">
+      <div class="cmodal-handle"></div>
+      <div class="cmodal-header">
+        <span class="cmodal-title" id="cmodal-title">Prayer</span>
+        <button class="cmodal-close" onclick="closeCModal()">✕</button>
+      </div>
+      <div id="rosary-progress" class="rosary-progress" style="display:none"></div>
+      <div class="cmodal-body" id="cmodal-body"></div>
+      <div id="rosary-nav" class="rosary-nav" style="display:none">
+        <button class="btn btn-outline" id="rosary-prev" onclick="rosaryStep(-1)">← Back</button>
+        <button class="btn btn-gold" id="rosary-next" onclick="rosaryStep(1)">Next →</button>
+      </div>
+    </div>
+  </div>
 
   <!-- BOTTOM NAV -->
   <nav class="nav">
@@ -1149,6 +1259,7 @@
     const navItem = [...navItems].find(n => n.dataset.nav === target);
     if (navItem) navItem.classList.add('active');
     screens.forEach(s => s.classList.toggle('active', s.dataset.screen === target));
+    if (target === 'saints') loadSaintsScreen();
   }
 
   navItems.forEach(item => {
@@ -1310,6 +1421,571 @@
     localStorage.setItem('darkMode', isDark);
     applyTheme(isDark);
   });
+
+  // ---- Content Modal ----
+  function openCModal(title, bodyHTML, isRosary) {
+    document.getElementById('cmodal-title').textContent = title;
+    document.getElementById('cmodal-body').innerHTML = bodyHTML;
+    document.getElementById('rosary-nav').style.display = isRosary ? 'flex' : 'none';
+    document.getElementById('rosary-progress').style.display = isRosary ? 'flex' : 'none';
+    document.getElementById('cmodal').classList.add('open');
+  }
+
+  function closeCModal() {
+    document.getElementById('cmodal').classList.remove('open');
+  }
+
+  // ---- Prayer Data ----
+  const PRAYERS = {
+    'Morning Offering': `O my God, in union with the Immaculate Heart of Mary, I offer Thee the Precious Blood of Jesus from all the altars throughout the world, joining with It the offering of my every thought, word and action of this day.\n\nO my Jesus, I desire today to gain every indulgence and merit I can, and I offer them, together with myself, to Mary Immaculate — that she may best apply them to the interests of Thy most Sacred Heart.\n\nPrecious Blood of Jesus, save us!\nImmaculate Heart of Mary, pray for us!\nSacred Heart of Jesus, have mercy on us!\n\nAmen.`,
+    'Evening Prayer': `O Lord, my God, I thank You that in Your goodness and mercy\nYou have seen me safely through this day.\n\nI ask forgiveness for all my sins,\nfor every thought, word, and deed that has offended You.\nPlease forgive me and help me to do better tomorrow.\n\nProtect me through the night\nand keep me safe from all danger.\nMay I rest in Your peace\nand awaken to serve You with renewed strength.\n\nI entrust myself and all I love into Your care.\nThrough Christ our Lord.\n\nAmen.`,
+    'Our Father': `Our Father, Who art in heaven,\nHallowed be Thy Name.\nThy Kingdom come.\nThy Will be done, on earth as it is in Heaven.\n\nGive us this day our daily bread.\nAnd forgive us our trespasses,\nas we forgive those who trespass against us.\nAnd lead us not into temptation,\nbut deliver us from evil.\n\nAmen.`,
+    'Hail Mary': `Hail Mary, full of grace, the Lord is with thee;\nblessed art thou among women,\nand blessed is the fruit of thy womb, Jesus.\n\nHoly Mary, Mother of God,\npray for us sinners,\nnow and at the hour of our death.\n\nAmen.`,
+    'Glory Be': `Glory Be to the Father, and to the Son, and to the Holy Spirit.\n\nAs it was in the beginning, is now, and ever shall be, world without end.\n\nAmen.`,
+    'Act of Contrition': `O my God, I am heartily sorry for having offended Thee,\nand I detest all my sins because of Thy just punishments,\nbut most of all because they offend Thee, my God,\nWho art all good and deserving of all my love.\n\nI firmly resolve, with the help of Thy grace,\nto sin no more and to avoid the near occasions of sin.\n\nAmen.`,
+    'Apostles Creed': `I believe in God, the Father Almighty, Creator of Heaven and earth;\nand in Jesus Christ, His only Son, Our Lord,\nWho was conceived by the Holy Spirit,\nborn of the Virgin Mary,\nsuffered under Pontius Pilate,\nwas crucified, died, and was buried.\n\nHe descended into Hell;\nthe third day He rose again from the dead;\nHe ascended into Heaven,\nand sitteth at the right hand of God, the Father Almighty;\nfrom thence He shall come to judge the living and the dead.\n\nI believe in the Holy Spirit, the holy Catholic Church,\nthe communion of Saints, the forgiveness of sins,\nthe resurrection of the body,\nand life everlasting.\n\nAmen.`,
+    'Angelus': `V. The Angel of the Lord declared unto Mary.\nR. And she conceived of the Holy Spirit.\n\nHail Mary, full of grace, the Lord is with thee;\nblessed art thou among women, and blessed is the fruit of thy womb, Jesus.\nHoly Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.\n\nV. Behold the handmaid of the Lord.\nR. Be it done unto me according to Thy Word.\n\nHail Mary…\n\nV. And the Word was made Flesh.\nR. And dwelt among us.\n\nHail Mary…\n\nV. Pray for us, O Holy Mother of God.\nR. That we may be made worthy of the promises of Christ.\n\nLet us pray:\nPour forth, we beseech Thee, O Lord, Thy grace into our hearts; that we, to whom the Incarnation of Christ, Thy Son, was made known by the message of an angel, may by His Passion and Cross be brought to the glory of His Resurrection, through the same Christ Our Lord.\n\nAmen.`
+  };
+
+  function openPrayer(name) {
+    const text = PRAYERS[name];
+    if (!text) return;
+    const displayName = name === 'Apostles Creed' ? "Apostles' Creed" : name;
+    openCModal(displayName,
+      `<p style="white-space:pre-wrap;font-family:'Cormorant Garamond',serif;font-size:18px;line-height:1.75;color:var(--ink)">${text}</p>`,
+      false);
+  }
+
+  function openApostlesCreed() { openPrayer('Apostles Creed'); }
+
+  // ---- Rosary ----
+  const ROSARY_MYSTERIES = {
+    Joyful: [
+      ['The Annunciation', 'The Angel Gabriel announces to Mary that she is to be the Mother of the Son of God. She responds with complete trust: "Behold the handmaid of the Lord; be it done to me according to thy word."\n\n✦ Fruit of the mystery: Humility\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Visitation', "Mary hastens to help her cousin Elizabeth, who is with child in her old age. At Mary's greeting, John the Baptist leaps in his mother's womb and Elizabeth cries: \"Blessed art thou among women!\"\n\n✦ Fruit of the mystery: Love of Neighbor\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer"],
+      ['The Nativity', 'Jesus, the eternal Son of God, is born in a stable in Bethlehem. Angels proclaim the Good News to shepherds, and wise men come from the East to adore the newborn King.\n\n✦ Fruit of the mystery: Detachment from the World\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Presentation', 'Mary and Joseph bring the infant Jesus to the Temple. The holy elder Simeon takes the Child in his arms and prophesies: "This child is destined for the fall and rise of many in Israel."\n\n✦ Fruit of the mystery: Obedience\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Finding in the Temple', "After three days of searching, Mary and Joseph find the twelve-year-old Jesus in the Temple, sitting among the teachers. He says: \"Did you not know that I must be in my Father's house?\"\n\n✦ Fruit of the mystery: Piety\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer"],
+    ],
+    Sorrowful: [
+      ['The Agony in the Garden', 'Jesus prays in the Garden of Gethsemane, knowing His passion is at hand. He sweats blood in agony and prays: "Father, if thou art willing, remove this cup from me; nevertheless not my will, but thine, be done."\n\n✦ Fruit of the mystery: Sorrow for Sin\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Scourging at the Pillar', 'Jesus is bound to a pillar and beaten mercilessly by Roman soldiers, fulfilling the prophecy of Isaiah: "By His stripes we are healed."\n\n✦ Fruit of the mystery: Purity\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Crowning with Thorns', 'Soldiers weave a crown of thorns and press it onto the head of Jesus. They mock Him as "King of the Jews," striking and spitting on Him. He accepts this suffering in silence.\n\n✦ Fruit of the mystery: Moral Courage\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Carrying of the Cross', 'Jesus carries His heavy cross through the streets of Jerusalem toward Golgotha. He falls three times under its weight. Simon of Cyrene is compelled to help. Veronica wipes His face.\n\n✦ Fruit of the mystery: Patience\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Crucifixion', 'Jesus is nailed to the cross between two thieves and dies after three hours of agony. His last words include forgiveness for His executioners, a promise of paradise to the repentant thief, and entrusting Mary to John.\n\n✦ Fruit of the mystery: Perseverance\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+    ],
+    Glorious: [
+      ['The Resurrection', 'On the third day, Jesus rises gloriously from the dead, appearing first to Mary Magdalene, then to the Apostles. He says: "I am the resurrection and the life." Death is conquered and eternal life is won.\n\n✦ Fruit of the mystery: Faith\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Ascension', 'Forty days after His Resurrection, Jesus ascends bodily into Heaven from the Mount of Olives. Angels announce He will come again in the same manner.\n\n✦ Fruit of the mystery: Hope\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Descent of the Holy Spirit', 'Ten days after the Ascension, the Holy Spirit descends upon Mary and the Apostles in the Upper Room as tongues of fire. The Church is born at Pentecost.\n\n✦ Fruit of the mystery: Love of God\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Assumption', 'At the end of her earthly life, the Virgin Mary is assumed body and soul into heavenly glory — a foretaste and sign of our own resurrection.\n\n✦ Fruit of the mystery: Grace of a Happy Death\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Coronation of Mary', "The Blessed Virgin Mary is crowned Queen of Heaven and Earth by her Divine Son. She reigns as our intercessor before the throne of God, and the angels and saints rejoice.\n\n✦ Fruit of the mystery: Trust in Mary's Intercession\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer"],
+    ],
+    Luminous: [
+      ['The Baptism in the Jordan', 'Jesus is baptized by John in the River Jordan. The heavens open, the Holy Spirit descends like a dove, and the Father proclaims: "This is my beloved Son, with whom I am well pleased."\n\n✦ Fruit of the mystery: Openness to the Holy Spirit\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['The Wedding at Cana', "At Mary's intercession, Jesus performs His first public miracle — turning water into wine at a wedding in Cana — and manifests His glory for the first time.\n\n✦ Fruit of the mystery: To Jesus through Mary\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer"],
+      ['Proclamation of the Kingdom', "Jesus proclaims the Kingdom of God, calls sinners to conversion, and forgives sins. He heals the sick and feeds the multitudes, showing that God's kingdom is one of mercy.\n\n✦ Fruit of the mystery: Repentance and Trust in God\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer"],
+      ['The Transfiguration', 'Jesus is transfigured in glory before Peter, James, and John on Mount Tabor. His face shines like the sun; His garments become dazzling white. Moses and Elijah appear with Him.\n\n✦ Fruit of the mystery: Desire for Holiness\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+      ['Institution of the Eucharist', 'At the Last Supper, Jesus takes bread and wine and says: "This is my Body… This is my Blood." He institutes the Most Holy Eucharist, the source and summit of Christian life.\n\n✦ Fruit of the mystery: Eucharistic Adoration\n\nPray: Our Father · 10 Hail Marys · Glory Be · Fatima Prayer'],
+    ],
+  };
+
+  function getMysterySet() {
+    const d = new Date().getDay();
+    if (d === 1 || d === 6) return 'Joyful';
+    if (d === 2 || d === 5) return 'Sorrowful';
+    if (d === 0 || d === 3) return 'Glorious';
+    return 'Luminous';
+  }
+
+  let rosarySteps = [];
+  let rosaryIdx = 0;
+
+  function openRosary() {
+    const set = getMysterySet();
+    rosarySteps = [
+      {
+        title: set + ' Mysteries',
+        body: `<p style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);margin-bottom:14px">Today: The ${set} Mysteries</p><p style="font-size:14px;line-height:1.7;color:var(--ink-soft)">Begin with the Apostles' Creed, then one Our Father, three Hail Marys for Faith, Hope, and Charity, and one Glory Be on the introductory beads.\n\nThen pray each decade as prompted — one Our Father, ten Hail Marys meditating on the mystery, one Glory Be, and the Fatima Prayer.</p>`
+      },
+      ...ROSARY_MYSTERIES[set].map(([subtitle, text]) => ({
+        title: subtitle,
+        body: `<p style="white-space:pre-wrap;font-family:'Cormorant Garamond',serif;font-size:17px;line-height:1.75;color:var(--ink)">${text}</p>`
+      })),
+      {
+        title: 'Hail Holy Queen',
+        body: `<p style="white-space:pre-wrap;font-family:'Cormorant Garamond',serif;font-size:17px;line-height:1.75;color:var(--ink)">Hail, Holy Queen, Mother of Mercy,\nour life, our sweetness and our hope!\n\nTo thee do we cry,\npoor banished children of Eve.\nTo thee do we send up our sighs,\nmourning and weeping in this valley of tears.\n\nTurn then, most gracious advocate,\nthine eyes of mercy towards us;\nand after this our exile,\nshow unto us the blessed fruit of thy womb, Jesus.\n\nO clement, O loving, O sweet Virgin Mary!\n\nV. Pray for us, O holy Mother of God.\nR. That we may be made worthy of the promises of Christ.\n\nAmen.</p>`
+      }
+    ];
+    rosaryIdx = 0;
+
+    const prog = document.getElementById('rosary-progress');
+    prog.innerHTML = rosarySteps.map((_, i) =>
+      `<div class="rosary-dot${i === 0 ? ' active' : ''}"></div>`
+    ).join('');
+
+    openCModal(rosarySteps[0].title, rosarySteps[0].body, true);
+    updateRosaryBtns();
+  }
+
+  function updateRosaryBtns() {
+    document.getElementById('rosary-prev').disabled = rosaryIdx === 0;
+    document.getElementById('rosary-next').textContent =
+      rosaryIdx === rosarySteps.length - 1 ? 'Finish ✓' : 'Next →';
+  }
+
+  function rosaryStep(dir) {
+    const next = rosaryIdx + dir;
+    if (next >= rosarySteps.length) { closeCModal(); return; }
+    rosaryIdx = Math.max(0, next);
+    const step = rosarySteps[rosaryIdx];
+    document.getElementById('cmodal-title').textContent = step.title;
+    document.getElementById('cmodal-body').innerHTML = step.body;
+    document.getElementById('cmodal-body').scrollTop = 0;
+    document.querySelectorAll('.rosary-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === rosaryIdx));
+    updateRosaryBtns();
+  }
+
+  // ---- Liturgical Calendar (local, no CORS issues) ----
+  function getEaster(year) {
+    const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+    const d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4), k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31);
+    const day   = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(year, month - 1, day);
+  }
+
+  function addDays(date, n) {
+    const d = new Date(date); d.setDate(d.getDate() + n); return d;
+  }
+
+  function sameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() &&
+           a.getMonth()    === b.getMonth()    &&
+           a.getDate()     === b.getDate();
+  }
+
+  function getAdvent1(year) {
+    const dec25 = new Date(year, 11, 25);
+    const dow = dec25.getDay();
+    const fourthAdventSun = addDays(dec25, -(dow === 0 ? 7 : dow));
+    return addDays(fourthAdventSun, -21);
+  }
+
+  function getLiturgicalSeason(date, easter) {
+    const y = date.getFullYear();
+    const ash = addDays(easter, -46);
+    const pentecost = addDays(easter, 49);
+    const advent1 = getAdvent1(y);
+    const epiphany = new Date(y, 0, 13); // Baptism of the Lord approx
+    if (date <= epiphany) return 'Christmas Season';
+    if (date >= ash && date < easter) return 'Lent';
+    if (date >= easter && date <= pentecost) return 'Eastertide';
+    if (date >= advent1) return 'Advent';
+    return 'Ordinary Time';
+  }
+
+  const FIXED_FEASTS = {
+    '1-1':  { title: 'Mary, Mother of God', rank: 'Solemnity' },
+    '1-6':  { title: 'Epiphany of the Lord', rank: 'Solemnity' },
+    '1-17': { title: 'Saint Anthony the Abbot', rank: 'Memorial' },
+    '1-20': { title: 'Saint Fabian & Saint Sebastian', rank: 'Memorial' },
+    '1-21': { title: 'Saint Agnes', rank: 'Memorial' },
+    '1-24': { title: 'Saint Francis de Sales', rank: 'Memorial' },
+    '1-25': { title: 'Conversion of Saint Paul', rank: 'Feast' },
+    '1-26': { title: 'Saints Timothy and Titus', rank: 'Memorial' },
+    '1-28': { title: 'Saint Thomas Aquinas', rank: 'Memorial' },
+    '2-2':  { title: 'Presentation of the Lord', rank: 'Feast' },
+    '2-5':  { title: 'Saint Agatha', rank: 'Memorial' },
+    '2-6':  { title: 'Saints Paul Miki and Companions', rank: 'Memorial' },
+    '2-10': { title: 'Saint Scholastica', rank: 'Memorial' },
+    '2-11': { title: 'Our Lady of Lourdes', rank: 'Optional Memorial' },
+    '2-14': { title: 'Saints Cyril and Methodius', rank: 'Memorial' },
+    '2-22': { title: 'Chair of Saint Peter', rank: 'Feast' },
+    '3-7':  { title: 'Saints Perpetua and Felicity', rank: 'Memorial' },
+    '3-17': { title: 'Saint Patrick', rank: 'Optional Memorial' },
+    '3-19': { title: 'Saint Joseph, Spouse of the Blessed Virgin Mary', rank: 'Solemnity' },
+    '3-25': { title: 'Annunciation of the Lord', rank: 'Solemnity' },
+    '4-7':  { title: 'Saint John Baptist de la Salle', rank: 'Memorial' },
+    '4-11': { title: 'Saint Stanislaus', rank: 'Memorial' },
+    '4-21': { title: 'Saint Anselm', rank: 'Optional Memorial' },
+    '4-22': { title: 'Saints Soter and Caius', rank: 'Optional Memorial' },
+    '4-23': { title: 'Saint George', rank: 'Optional Memorial' },
+    '4-24': { title: 'Saint Fidelis of Sigmaringen', rank: 'Memorial' },
+    '4-25': { title: 'Saint Mark the Evangelist', rank: 'Feast' },
+    '4-28': { title: 'Saint Peter Chanel', rank: 'Optional Memorial' },
+    '4-29': { title: 'Saint Catherine of Siena', rank: 'Memorial' },
+    '5-1':  { title: 'Saint Joseph the Worker', rank: 'Optional Memorial' },
+    '5-2':  { title: 'Saint Athanasius', rank: 'Memorial' },
+    '5-3':  { title: 'Saints Philip and James', rank: 'Feast' },
+    '5-13': { title: 'Our Lady of Fatima', rank: 'Optional Memorial' },
+    '5-14': { title: 'Saint Matthias the Apostle', rank: 'Feast' },
+    '5-26': { title: 'Saint Philip Neri', rank: 'Memorial' },
+    '5-31': { title: 'Visitation of the Blessed Virgin Mary', rank: 'Feast' },
+    '6-1':  { title: 'Saint Justin Martyr', rank: 'Memorial' },
+    '6-3':  { title: 'Saint Charles Lwanga and Companions', rank: 'Memorial' },
+    '6-5':  { title: 'Saint Boniface', rank: 'Memorial' },
+    '6-11': { title: 'Saint Barnabas the Apostle', rank: 'Memorial' },
+    '6-13': { title: 'Saint Anthony of Padua', rank: 'Memorial' },
+    '6-21': { title: 'Saint Aloysius Gonzaga', rank: 'Memorial' },
+    '6-24': { title: 'Nativity of Saint John the Baptist', rank: 'Solemnity' },
+    '6-28': { title: 'Saint Irenaeus', rank: 'Memorial' },
+    '6-29': { title: 'Saints Peter and Paul, Apostles', rank: 'Solemnity' },
+    '7-3':  { title: 'Saint Thomas the Apostle', rank: 'Feast' },
+    '7-11': { title: 'Saint Benedict of Nursia', rank: 'Memorial' },
+    '7-15': { title: 'Saint Bonaventure', rank: 'Memorial' },
+    '7-16': { title: 'Our Lady of Mount Carmel', rank: 'Optional Memorial' },
+    '7-22': { title: 'Saint Mary Magdalene', rank: 'Feast' },
+    '7-25': { title: 'Saint James the Apostle', rank: 'Feast' },
+    '7-26': { title: 'Saints Joachim and Anne', rank: 'Memorial' },
+    '7-29': { title: 'Saints Martha, Mary, and Lazarus', rank: 'Memorial' },
+    '7-31': { title: 'Saint Ignatius of Loyola', rank: 'Memorial' },
+    '8-1':  { title: 'Saint Alphonsus Liguori', rank: 'Memorial' },
+    '8-4':  { title: 'Saint John Vianney', rank: 'Memorial' },
+    '8-6':  { title: 'Transfiguration of the Lord', rank: 'Feast' },
+    '8-8':  { title: 'Saint Dominic', rank: 'Memorial' },
+    '8-10': { title: 'Saint Lawrence', rank: 'Feast' },
+    '8-11': { title: 'Saint Clare of Assisi', rank: 'Memorial' },
+    '8-14': { title: 'Saint Maximilian Kolbe', rank: 'Memorial' },
+    '8-15': { title: 'Assumption of the Blessed Virgin Mary', rank: 'Solemnity' },
+    '8-20': { title: 'Saint Bernard of Clairvaux', rank: 'Memorial' },
+    '8-21': { title: 'Saint Pius X', rank: 'Memorial' },
+    '8-22': { title: 'Queenship of the Blessed Virgin Mary', rank: 'Memorial' },
+    '8-24': { title: 'Saint Bartholomew the Apostle', rank: 'Feast' },
+    '8-27': { title: 'Saint Monica', rank: 'Memorial' },
+    '8-28': { title: 'Saint Augustine of Hippo', rank: 'Memorial' },
+    '8-29': { title: 'Passion of Saint John the Baptist', rank: 'Memorial' },
+    '9-3':  { title: 'Saint Gregory the Great', rank: 'Memorial' },
+    '9-8':  { title: 'Nativity of the Blessed Virgin Mary', rank: 'Feast' },
+    '9-13': { title: 'Saint John Chrysostom', rank: 'Memorial' },
+    '9-14': { title: 'Exaltation of the Holy Cross', rank: 'Feast' },
+    '9-15': { title: 'Our Lady of Sorrows', rank: 'Memorial' },
+    '9-16': { title: 'Saints Cornelius and Cyprian', rank: 'Memorial' },
+    '9-21': { title: 'Saint Matthew the Apostle', rank: 'Feast' },
+    '9-23': { title: 'Saint Pius of Pietrelcina (Padre Pio)', rank: 'Memorial' },
+    '9-27': { title: 'Saint Vincent de Paul', rank: 'Memorial' },
+    '9-29': { title: 'Saints Michael, Gabriel, and Raphael', rank: 'Feast' },
+    '9-30': { title: 'Saint Jerome', rank: 'Memorial' },
+    '10-1': { title: 'Saint Thérèse of the Child Jesus', rank: 'Memorial' },
+    '10-2': { title: 'Guardian Angels', rank: 'Memorial' },
+    '10-4': { title: 'Saint Francis of Assisi', rank: 'Memorial' },
+    '10-7': { title: 'Our Lady of the Rosary', rank: 'Memorial' },
+    '10-15': { title: 'Saint Teresa of Ávila', rank: 'Memorial' },
+    '10-17': { title: 'Saint Ignatius of Antioch', rank: 'Memorial' },
+    '10-18': { title: 'Saint Luke the Evangelist', rank: 'Feast' },
+    '10-22': { title: 'Saint John Paul II', rank: 'Optional Memorial' },
+    '10-28': { title: 'Saints Simon and Jude, Apostles', rank: 'Feast' },
+    '11-1': { title: 'All Saints', rank: 'Solemnity' },
+    '11-2': { title: 'All Souls', rank: 'Commemoration' },
+    '11-4': { title: 'Saint Charles Borromeo', rank: 'Memorial' },
+    '11-9': { title: 'Dedication of the Lateran Basilica', rank: 'Feast' },
+    '11-10': { title: 'Saint Leo the Great', rank: 'Memorial' },
+    '11-11': { title: 'Saint Martin of Tours', rank: 'Memorial' },
+    '11-12': { title: 'Saint Josaphat', rank: 'Memorial' },
+    '11-17': { title: 'Saint Elizabeth of Hungary', rank: 'Memorial' },
+    '11-21': { title: 'Presentation of the Blessed Virgin Mary', rank: 'Memorial' },
+    '11-22': { title: 'Saint Cecilia', rank: 'Memorial' },
+    '11-30': { title: 'Saint Andrew the Apostle', rank: 'Feast' },
+    '12-3': { title: 'Saint Francis Xavier', rank: 'Memorial' },
+    '12-6': { title: 'Saint Nicholas', rank: 'Optional Memorial' },
+    '12-7': { title: 'Saint Ambrose', rank: 'Memorial' },
+    '12-8': { title: 'Immaculate Conception of the Blessed Virgin Mary', rank: 'Solemnity' },
+    '12-12': { title: 'Our Lady of Guadalupe', rank: 'Feast' },
+    '12-13': { title: 'Saint Lucy', rank: 'Memorial' },
+    '12-14': { title: 'Saint John of the Cross', rank: 'Memorial' },
+    '12-25': { title: 'Nativity of the Lord', rank: 'Solemnity' },
+    '12-26': { title: 'Saint Stephen', rank: 'Feast' },
+    '12-27': { title: 'Saint John the Apostle and Evangelist', rank: 'Feast' },
+    '12-28': { title: 'Holy Innocents', rank: 'Feast' },
+  };
+
+  const MOVEABLE_OFFSETS = [
+    { n: -46, title: 'Ash Wednesday',                        rank: 'Ash Wednesday' },
+    { n:  -7, title: 'Palm Sunday of the Lord\'s Passion',   rank: 'Solemnity' },
+    { n:  -3, title: 'Holy Thursday',                        rank: 'Solemnity' },
+    { n:  -2, title: 'Good Friday',                          rank: 'Solemnity' },
+    { n:  -1, title: 'Holy Saturday',                        rank: 'Solemnity' },
+    { n:   0, title: 'Easter Sunday',                        rank: 'Solemnity' },
+    { n:   1, title: 'Easter Monday',                        rank: 'Solemnity' },
+    { n:   7, title: 'Divine Mercy Sunday',                  rank: 'Feast' },
+    { n:  39, title: 'Ascension of the Lord',                rank: 'Solemnity' },
+    { n:  49, title: 'Pentecost Sunday',                     rank: 'Solemnity' },
+    { n:  56, title: 'Trinity Sunday',                       rank: 'Solemnity' },
+    { n:  60, title: 'Corpus Christi',                       rank: 'Solemnity' },
+    { n:  68, title: 'The Most Sacred Heart of Jesus',       rank: 'Solemnity' },
+  ];
+
+  function getTodaysFeast(date) {
+    const y = date.getFullYear();
+    const easter = getEaster(y);
+
+    for (const f of MOVEABLE_OFFSETS) {
+      if (sameDay(date, addDays(easter, f.n))) return { title: f.title, rank: f.rank, season: getLiturgicalSeason(date, easter) };
+    }
+
+    const key = `${date.getMonth() + 1}-${date.getDate()}`;
+    if (FIXED_FEASTS[key]) return { ...FIXED_FEASTS[key], season: getLiturgicalSeason(date, easter) };
+
+    return { title: null, rank: null, season: getLiturgicalSeason(date, easter) };
+  }
+
+  function getLiturgicalDayDesc(date, easter) {
+    const y = date.getFullYear();
+    const season = getLiturgicalSeason(date, easter);
+    const ords = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th',
+      '11th','12th','13th','14th','15th','16th','17th','18th','19th','20th',
+      '21st','22nd','23rd','24th','25th','26th','27th','28th','29th','30th',
+      '31st','32nd','33rd','34th'];
+
+    if (season === 'Eastertide') {
+      const days = Math.round((date - easter) / 86400000) + 1;
+      return `Day ${days} of Eastertide`;
+    }
+
+    if (season === 'Lent') {
+      if (sameDay(date, addDays(easter, -46))) return 'Ash Wednesday';
+      if (sameDay(date, addDays(easter,  -7))) return 'Palm Sunday';
+      if (sameDay(date, addDays(easter,  -6))) return 'Holy Monday';
+      if (sameDay(date, addDays(easter,  -5))) return 'Holy Tuesday';
+      if (sameDay(date, addDays(easter,  -4))) return 'Holy Wednesday';
+      if (sameDay(date, addDays(easter,  -3))) return 'Holy Thursday';
+      if (sameDay(date, addDays(easter,  -2))) return 'Good Friday';
+      if (sameDay(date, addDays(easter,  -1))) return 'Holy Saturday';
+      const ash = addDays(easter, -46);
+      const days = Math.round((date - ash) / 86400000) + 1;
+      return `Day ${days} of Lent`;
+    }
+
+    if (season === 'Advent') {
+      const advent1 = getAdvent1(y);
+      const days = Math.round((date - advent1) / 86400000);
+      const week = Math.min(Math.floor(days / 7) + 1, 4);
+      return `${ords[week]} Week of Advent`;
+    }
+
+    if (season === 'Christmas Season') return 'Christmas Season';
+
+    // Ordinary Time — compute week number
+    const jan6 = new Date(y, 0, 6);
+    const jan6dow = jan6.getDay();
+    const baptism = jan6dow === 0 ? addDays(jan6, 7) : addDays(jan6, 7 - jan6dow);
+    const ash = addDays(easter, -46);
+    const pentecost = addDays(easter, 49);
+
+    let week;
+    if (date >= baptism && date < ash) {
+      week = Math.floor(Math.round((date - baptism) / 86400000) / 7) + 2;
+    } else {
+      const weeksBeforeAsh = Math.floor(Math.round((ash - baptism) / 86400000) / 7) + 1;
+      week = weeksBeforeAsh + Math.floor(Math.round((date - pentecost) / 86400000) / 7) + 1;
+      week = Math.min(week, 34);
+    }
+    return `${ords[week] || week + 'th'} Week of Ordinary Time`;
+  }
+
+  // ---- Home Screen: Dynamic Data ----
+  function formatHomeDate(d) {
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${days[d.getDay()]} · ${months[d.getMonth()]} ${d.getDate()}`;
+  }
+
+  function getGreetingWord() {
+    const h = new Date().getHours();
+    return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  }
+
+  async function loadHomeData() {
+    const now = new Date();
+    const hd = document.getElementById('home-date');
+    const hg = document.getElementById('home-greeting');
+    if (hd) hd.textContent = formatHomeDate(now);
+    if (hg) hg.textContent = getGreetingWord();
+
+    const mystTitle = document.getElementById('rosary-mystery-title');
+    const mystMeta  = document.getElementById('pray-mystery-meta');
+    const setName   = getMysterySet() + ' Mysteries';
+    if (mystTitle) mystTitle.textContent = setName;
+    if (mystMeta)  mystMeta.textContent  = 'Today: ' + setName;
+
+    // Verse of the day
+    try {
+      const vr = await fetch('https://beta.ourmanna.com/api/v1/get/?format=json');
+      const vd = await vr.json();
+      const vText = document.getElementById('verse-text');
+      const vCite = document.getElementById('verse-cite');
+      if (vText && vd.verse?.details?.text)      vText.textContent = vd.verse.details.text;
+      if (vCite && vd.verse?.details?.reference) vCite.textContent = '— ' + vd.verse.details.reference;
+    } catch {}
+
+    // Feast day + liturgical day description (computed locally — accurate & offline)
+    const easter = getEaster(now.getFullYear());
+    const feast  = getTodaysFeast(now);
+    const litDay = getLiturgicalDayDesc(now, easter);
+    const fName  = document.getElementById('feast-name');
+    const fTitle = document.getElementById('feast-title');
+    const hSub   = document.getElementById('home-subgreet');
+    if (feast.title) {
+      if (fName)  fName.textContent  = feast.title;
+      if (fTitle) fTitle.textContent = feast.rank || '';
+      if (hSub)   hSub.textContent   = `${litDay} · ${feast.title}`;
+    } else {
+      if (fName)  fName.textContent  = feast.season || 'Ordinary Time';
+      if (fTitle) fTitle.textContent = litDay;
+      if (hSub)   hSub.textContent   = litDay;
+    }
+  }
+
+  // ---- Saints Screen ----
+  let saintsLoaded = false;
+  let currentSaint = { name: '', bio: '' };
+
+  async function loadSaintsScreen() {
+    if (saintsLoaded) return;
+    saintsLoaded = true;
+
+    const now = new Date();
+    const nameEl  = document.getElementById('saint-today-name');
+    const titleEl = document.getElementById('saint-today-title');
+    const bioEl   = document.getElementById('saint-bio-text');
+
+    // Feast from local calendar — no network required
+    const feast = getTodaysFeast(now);
+    const saintName = feast.title;
+
+    if (saintName && nameEl) {
+      nameEl.textContent = saintName;
+      nameEl.classList.remove('skel');
+      if (titleEl) titleEl.textContent = feast.rank || feast.season || '';
+      currentSaint.name = saintName;
+
+      // Wikipedia bio — CORS-friendly
+      const searchName = saintName
+        .replace(/^(Saints?|Sts?\.|Blesseds?|Bl\.)\s+/i, '')
+        .replace(/\s*\(.*?\)/g, '')
+        .split(',')[0].split(' and ')[0].trim();
+
+      if (bioEl) {
+        bioEl.textContent = 'Loading biography…';
+        try {
+          const wr = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchName)}`);
+          const wd = await wr.json();
+          const extract = wd.extract || '';
+          bioEl.textContent = extract || 'No Wikipedia biography found for this feast.';
+          currentSaint.bio = extract;
+        } catch {
+          bioEl.textContent = 'Biography unavailable at this time.';
+        }
+      }
+    } else {
+      if (nameEl) { nameEl.textContent = feast.season || 'Ordinary Time'; nameEl.classList.remove('skel'); }
+      if (titleEl) titleEl.textContent = '';
+      if (bioEl)   bioEl.textContent = 'No particular feast or memorial is assigned to today in the Ordinary Form of the Roman Rite.';
+    }
+  }
+
+  function openSaintWiki() {
+    if (!currentSaint.name) return;
+    openCModal(currentSaint.name,
+      `<p style="font-size:14px;line-height:1.7;color:var(--ink-soft);white-space:pre-wrap">${currentSaint.bio || 'Biography not loaded yet.'}</p>`,
+      false);
+  }
+
+  function openSaintDetail(name, bio) {
+    openCModal(name,
+      `<p style="font-size:14px;line-height:1.7;color:var(--ink-soft)">${bio}</p>`,
+      false);
+  }
+
+  // ---- Init ----
+  loadHomeData();
+
+  // ---- Push Notifications ----
+  const VAPID_PUBLIC_KEY = 'BHj4SyHudAtLYj2oF8tIlyElHab33gn5Ip0nhu275oOhHdhS-wzN_os_bakSewPR96NVjrD-DtyT_Kd1iVMlF2s';
+
+  function urlBase64ToUint8Array(b64) {
+    const pad = '='.repeat((4 - b64.length % 4) % 4);
+    const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+    return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+  }
+
+  const notifToggle = document.getElementById('notif-toggle');
+  const notifSub    = document.getElementById('notif-sub');
+
+  function updateNotifUI(enabled) {
+    notifToggle.checked = enabled;
+    notifSub.textContent = enabled
+      ? 'You will receive daily saint & verse reminders'
+      : 'Saint of the day · verse · prayer reminder';
+  }
+
+  // Restore saved state
+  updateNotifUI(localStorage.getItem('pushEnabled') === 'true');
+
+  notifToggle.addEventListener('change', async () => {
+    if (notifToggle.checked) {
+      await enablePush();
+    } else {
+      await disablePush();
+    }
+  });
+
+  async function enablePush() {
+    if (!('PushManager' in window) || !('serviceWorker' in navigator)) {
+      notifToggle.checked = false;
+      notifSub.textContent = 'Push notifications are not supported in this browser';
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      notifToggle.checked = false;
+      notifSub.textContent = 'Permission denied — enable notifications in browser settings';
+      return;
+    }
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+      await fetch('https://project-veritas-backend.onrender.com/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sub)
+      });
+      localStorage.setItem('pushEnabled', 'true');
+      localStorage.setItem('pushEndpoint', sub.endpoint);
+      updateNotifUI(true);
+    } catch (err) {
+      console.error('Push subscribe failed:', err);
+      notifToggle.checked = false;
+      notifSub.textContent = 'Could not enable notifications — try again';
+    }
+  }
+
+  async function disablePush() {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+      if (sub) {
+        await fetch('https://project-veritas-backend.onrender.com/unsubscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: sub.endpoint })
+        });
+        await sub.unsubscribe();
+      }
+    } catch {}
+    localStorage.setItem('pushEnabled', 'false');
+    localStorage.removeItem('pushEndpoint');
+    updateNotifUI(false);
+  }
 
   // ---- Service Worker (only on http/https, not file://) ----
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
