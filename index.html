@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#1a2547" />
+<title>Daily Faith</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Tokens ---------- */
+  :root {
+    --navy:        #1a2547;
+    --navy-deep:   #141c38;
+    --navy-soft:   #2a3560;
+    --gold:        #c9a449;
+    --gold-light:  #e0c076;
+    --gold-soft:   #efe3c4;
+    --parchment:   #f5f2ec;
+    --parchment-2: #ebe6d9;
+    --cream:       #faf7f0;
+    --card:        #ffffff;
+    --ink:         #2b2a26;
+    --ink-soft:    #6b6a63;
+    --ink-mute:    #a7a59c;
+    --line:        #e8e4d9;
+    --shadow-sm:   0 1px 2px rgba(26,37,71,0.06);
+    --shadow-md:   0 4px 14px rgba(26,37,71,0.08);
+    --shadow-lg:   0 12px 32px rgba(26,37,71,0.18);
+    --shadow-gold: 0 8px 20px rgba(201,164,73,0.35);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--parchment);
+    color: var(--ink);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Subtle parchment grain texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(201,164,73,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(26,37,71,0.03) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ---------- App Shell ---------- */
+  .app {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--parchment);
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(12px);
+    transition: opacity .28s ease, transform .28s ease, visibility 0s .28s;
+  }
+  .screen.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition: opacity .32s ease, transform .32s ease, visibility 0s;
+  }
+
+  /* ---------- Header (navy) ---------- */
+  .header {
+    background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: calc(env(safe-area-inset-top, 0px) + 20px) 24px 36px;
+    border-radius: 0 0 28px 28px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 85% 15%, rgba(201,164,73,0.10) 0%, transparent 50%),
+      radial-gradient(circle at 10% 90%, rgba(201,164,73,0.05) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+  }
+  .date-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+  }
+  .bell {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: grid;
+    place-items: center;
+    border: none;
+    color: var(--navy);
+    cursor: pointer;
+    transition: transform .2s ease;
+    box-shadow: 0 4px 10px rgba(201,164,73,0.3);
+  }
+  .bell:active { transform: scale(0.92); }
+  .bell svg { width: 18px; height: 18px; }
+
+  .greeting {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .subgreet {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    font-weight: 400;
+  }
+
+  /* AI Chat header variant */
+  .header-chat {
+    text-align: center;
+    padding-bottom: 28px;
+  }
+  .header-chat .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .header-chat .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .header-chat .sub {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.6);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+  }
+
+  /* ---------- Scroll area ---------- */
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px 20px 140px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+
+  /* Verse card */
+  .verse-card {
+    background: linear-gradient(135deg, #fff 0%, #fdfaf1 100%);
+    border: 1px solid var(--gold-soft);
+  }
+  .card-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .card-label::before {
+    content: '✦';
+    font-size: 11px;
+    color: var(--gold);
+  }
+  .verse-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--ink);
+    margin: 4px 0 12px;
+    font-weight: 500;
+  }
+  .verse-cite {
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align: right;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* Feast day card */
+  .feast-card {
+    display: flex;
+    padding: 0;
+    overflow: hidden;
+    min-height: 108px;
+  }
+  .feast-art {
+    width: 108px;
+    flex-shrink: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        var(--gold-soft) 0px,
+        var(--gold-soft) 8px,
+        #f5e9c8 8px,
+        #f5e9c8 16px
+      );
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+  .feast-art::after {
+    content: '';
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border: 2px solid rgba(201,164,73,0.4);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%);
+  }
+  .feast-body {
+    padding: 16px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .feast-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .feast-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 2px;
+  }
+  .feast-title {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+
+  /* Two-col actions */
+  .actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .action-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 110px;
+  }
+  .action-head {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .action-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 2px;
+    line-height: 1.2;
+  }
+  .action-meta {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+  .btn {
+    margin-top: 10px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform .15s ease, box-shadow .15s ease;
+    letter-spacing: 0.01em;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-gold {
+    background: var(--gold);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(201,164,73,0.3);
+  }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline {
+    background: transparent;
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
+  }
+  .btn-outline:hover { background: var(--navy); color: #fff; }
+
+  /* Mass card */
+  .mass-card {
+    padding: 16px 18px;
+  }
+  .mass-head {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .mass-head::before {
+    content: '📍';
+    font-size: 12px;
+  }
+  .mass-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--ink);
+    border-bottom: 1px dashed var(--line);
+  }
+  .mass-item:last-child { border-bottom: none; }
+  .mass-item .time {
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  /* ---------- Bottom Nav ---------- */
+  .nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 14px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+    background: transparent;
+    z-index: 10;
+  }
+  /* SVG notched background layer */
+  .nav-bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: -40px;
+    width: 100%;
+    pointer-events: none;
+    filter: drop-shadow(0 -6px 16px rgba(26,37,71,0.08)) drop-shadow(0 -1px 0 rgba(26,37,71,0.05));
+  }
+  .nav-bg svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+  .nav-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    font-family: inherit;
+    color: var(--ink-mute);
+    transition: color .2s ease;
+    flex: 1;
+    max-width: 70px;
+    position: relative;
+    z-index: 2;
+  }
+  .nav-item svg { width: 22px; height: 22px; }
+  .nav-item .label {
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .nav-item.active { color: var(--navy); }
+  .nav-item.active svg { stroke: var(--navy); }
+
+  /* Raised center button — sits in the SVG notch */
+  .nav-center {
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 0 6px;
+    z-index: 2;
+  }
+  .nav-center-btn {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 60%, #b38d38 100%);
+    border: none;
+    box-shadow:
+      0 10px 24px rgba(201,164,73,0.4),
+      0 4px 10px rgba(26,37,71,0.18),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transform: translateY(-16px);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .nav-center-btn:active { transform: translateY(-14px) scale(0.94); }
+  .nav-center-btn svg { width: 24px; height: 24px; color: #fff; }
+  .nav-center .label {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-top: -4px;
+    letter-spacing: 0.02em;
+  }
+  .nav-center.active .nav-center-btn {
+    box-shadow:
+      0 12px 30px rgba(201,164,73,0.55),
+      0 2px 6px rgba(26,37,71,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.55);
+  }
+
+  /* ---------- AI Chat Screen ---------- */
+  .chat-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 20px 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .chat-body::-webkit-scrollbar { display: none; }
+
+  .suggestions {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 14px;
+    margin: 0 -20px 6px;
+    padding-left: 20px;
+    padding-right: 20px;
+    scrollbar-width: none;
+  }
+  .suggestions::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    padding: 9px 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12.5px;
+    color: var(--ink);
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all .2s ease;
+  }
+  .chip:hover {
+    border-color: var(--gold);
+    color: var(--navy);
+  }
+
+  .bubble-user {
+    align-self: flex-end;
+    max-width: 78%;
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 12px 16px;
+    border-radius: 18px 18px 4px 18px;
+    font-size: 14px;
+    color: var(--ink);
+    margin: 14px 0 8px;
+    box-shadow: var(--shadow-sm);
+    line-height: 1.45;
+  }
+
+  .answer-card {
+    align-self: flex-start;
+    max-width: 92%;
+    background: linear-gradient(135deg, #fff 0%, #fdfaf1 100%);
+    border: 1px solid var(--gold-soft);
+    border-radius: 18px 18px 18px 4px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .answer-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .answer-label::before { content: '✦'; }
+  .answer-text {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin: 0 0 12px;
+  }
+  .answer-cite {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gold-soft);
+    color: #8a6d24;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .answer-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .pill {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .2s ease;
+  }
+  .pill:hover { border-color: var(--gold); }
+  .pill-gold {
+    background: var(--gold-soft);
+    border-color: transparent;
+    color: #8a6d24;
+  }
+
+  /* Chat input */
+  .chat-input-wrap {
+    padding: 10px 18px 18px;
+    background: var(--parchment);
+    position: relative;
+    z-index: 5;
+  }
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 13px 18px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .2s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .chat-input:focus { border-color: var(--gold); }
+  .chat-input::placeholder { color: var(--ink-mute); }
+  .send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: none;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
+    transition: transform .15s ease;
+  }
+  .send-btn:active { transform: scale(0.92); }
+  .send-btn svg { width: 18px; height: 18px; }
+
+  /* Simple placeholder screens */
+  .placeholder {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    padding: 40px 30px;
+    text-align: center;
+  }
+  .placeholder-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--gold-soft);
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    color: var(--gold);
+  }
+  .placeholder-icon svg { width: 30px; height: 30px; }
+  .placeholder h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0 0 8px;
+  }
+  .placeholder p {
+    font-size: 14px;
+    color: var(--ink-soft);
+    max-width: 260px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  /* fade-in stagger on home load */
+  .fade-in > * {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: rise .5s ease forwards;
+  }
+  .fade-in > *:nth-child(1) { animation-delay: .05s; }
+  .fade-in > *:nth-child(2) { animation-delay: .12s; }
+  .fade-in > *:nth-child(3) { animation-delay: .19s; }
+  .fade-in > *:nth-child(4) { animation-delay: .26s; }
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- =================== HOME =================== -->
+  <section class="screen active" data-screen="home">
+    <header class="header">
+      <div class="header-top">
+        <span class="date-tag">Tuesday · Apr 21</span>
+        <button class="bell" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+          </svg>
+        </button>
+      </div>
+      <h1 class="greeting">Good morning</h1>
+      <p class="subgreet">Day 12 of Eastertide · St. Anselm</p>
+    </header>
+
+    <div class="scroll fade-in">
+      <!-- Verse -->
+      <div class="card verse-card">
+        <div class="card-label">Verse of the Day</div>
+        <p class="verse-text">The Lord is my shepherd; I shall not want. He maketh me to lie down in green pastures.</p>
+        <div class="verse-cite">— Psalm 23:1</div>
+      </div>
+
+      <!-- Feast -->
+      <div class="card feast-card">
+        <div class="feast-art" aria-hidden="true"></div>
+        <div class="feast-body">
+          <div class="feast-label">Feast Day</div>
+          <h3 class="feast-name">St. Anselm</h3>
+          <div class="feast-title">Doctor of the Church</div>
+        </div>
+      </div>
+
+      <!-- Actions row -->
+      <div class="actions-row">
+        <div class="action-card">
+          <div>
+            <div class="action-head">🙏 Morning Prayer</div>
+          </div>
+          <button class="btn btn-gold">Begin</button>
+        </div>
+        <div class="action-card">
+          <div>
+            <div class="action-head">📿 Rosary</div>
+            <div class="action-title">Joyful Mysteries</div>
+            <div class="action-meta">20 min</div>
+          </div>
+          <button class="btn btn-outline">Start</button>
+        </div>
+      </div>
+
+      <!-- Mass -->
+      <div class="card mass-card">
+        <div class="mass-head">Mass near you</div>
+        <div class="mass-item"><span>St. Mary's</span><span class="time">8:00 AM</span></div>
+        <div class="mass-item"><span>Holy Cross</span><span class="time">10:30 AM</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== AI CHAT =================== -->
+  <section class="screen" data-screen="ai">
+    <header class="header header-chat">
+      <div class="eyebrow">Catholic AI</div>
+      <h1 class="title">Ask the Faith</h1>
+      <div class="sub">Grounded in Church teaching</div>
+    </header>
+
+    <div class="chat-body">
+      <div class="suggestions">
+        <button class="chip">What is the Rosary?</button>
+        <button class="chip">Today's Gospel</button>
+        <button class="chip">Go to Confession</button>
+        <button class="chip">Saint of the day</button>
+      </div>
+
+      <div class="bubble-user">What is the Immaculate Conception?</div>
+
+      <div class="answer-card">
+        <div class="answer-label">Faith Answer</div>
+        <p class="answer-text">
+          The Immaculate Conception is the doctrine that the Blessed Virgin Mary, from the first moment of her conception, was preserved free from all stain of original sin by a singular grace of God in view of the merits of Christ.
+        </p>
+        <div class="answer-cite">📖 CCC 491–493</div>
+        <div class="answer-actions">
+          <button class="pill pill-gold">Read more</button>
+          <button class="pill">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-wrap">
+      <div class="chat-input-row">
+        <input class="chat-input" placeholder="Ask a faith question…" />
+        <button class="send-btn" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19V5"/>
+            <path d="m5 12 7-7 7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== PRAY =================== -->
+  <section class="screen" data-screen="pray">
+    <header class="header">
+      <div class="header-top">
+        <span class="date-tag">Prayers</span>
+        <button class="bell" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+          </svg>
+        </button>
+      </div>
+      <h1 class="greeting">Prayer</h1>
+      <p class="subgreet">Tradition, meditation, and daily devotion</p>
+    </header>
+    <div class="placeholder">
+      <div>
+        <div class="placeholder-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4"/><circle cx="12" cy="12" r="4"/>
+            <path d="M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          </svg>
+        </div>
+        <h2>Prayer library</h2>
+        <p>Rosary, Liturgy of the Hours, Novenas, and more — coming soon.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== SAINTS =================== -->
+  <section class="screen" data-screen="saints">
+    <header class="header">
+      <div class="header-top">
+        <span class="date-tag">Saints</span>
+        <button class="bell" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+          </svg>
+        </button>
+      </div>
+      <h1 class="greeting">Communion of Saints</h1>
+      <p class="subgreet">Lives that point us to Christ</p>
+    </header>
+    <div class="placeholder">
+      <div>
+        <div class="placeholder-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <h2>Saint index</h2>
+        <p>Browse saints by feast day, patronage, and tradition.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== MORE =================== -->
+  <section class="screen" data-screen="more">
+    <header class="header">
+      <div class="header-top">
+        <span class="date-tag">More</span>
+        <button class="bell" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+          </svg>
+        </button>
+      </div>
+      <h1 class="greeting">Settings & more</h1>
+      <p class="subgreet">Customize your daily walk</p>
+    </header>
+    <div class="placeholder">
+      <div>
+        <div class="placeholder-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </div>
+        <h2>Settings</h2>
+        <p>Account, notifications, reading plans, and preferences.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== BOTTOM NAV =================== -->
+  <nav class="nav">
+    <div class="nav-bg" aria-hidden="true">
+      <svg viewBox="0 -40 400 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <!--
+          Wide, gentle hump that cradles the button.
+          Lower peak (-18) so the bulge edge sits closer to the button's
+          lower curve instead of rising too far up its sides.
+        -->
+        <path d="
+          M0,0
+          L120,0
+          C165,0 165,-18 200,-18
+          C235,-18 235,0 280,0
+          L400,0
+          L400,100
+          L0,100
+          Z
+        " fill="#ffffff"/>
+      </svg>
+    </div>
+
+    <button class="nav-item active" data-nav="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span class="label">Home</span>
+    </button>
+
+    <button class="nav-item" data-nav="pray">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20M2 12h20"/>
+      </svg>
+      <span class="label">Pray</span>
+    </button>
+
+    <div class="nav-center active" data-nav="ai">
+      <button class="nav-center-btn" aria-label="Ask AI">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l2.09 6.26L20 10l-5.91 2.74L12 19l-2.09-6.26L4 10l5.91-1.74L12 2z"/>
+        </svg>
+      </button>
+      <span class="label">Ask AI</span>
+    </div>
+
+    <button class="nav-item" data-nav="saints">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      <span class="label">Saints</span>
+    </button>
+
+    <button class="nav-item" data-nav="more">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="5" cy="12" r="1.5"/>
+        <circle cx="12" cy="12" r="1.5"/>
+        <circle cx="19" cy="12" r="1.5"/>
+      </svg>
+      <span class="label">More</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+  // Nav switching
+  const navItems = document.querySelectorAll('[data-nav]');
+  const screens = document.querySelectorAll('.screen');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const target = item.dataset.nav;
+
+      navItems.forEach(n => n.classList.remove('active'));
+      item.classList.add('active');
+
+      screens.forEach(s => {
+        s.classList.toggle('active', s.dataset.screen === target);
+      });
+    });
+  });
+
+  // Suggestion chips populate input
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const input = document.querySelector('.chat-input');
+      input.value = chip.textContent;
+      input.focus();
+    });
+  });
+</script>
+</body>
+</html>
