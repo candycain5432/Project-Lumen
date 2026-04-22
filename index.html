@@ -5,21 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="theme-color" content="#1a2547" />
 <title>Daily Faith</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Daily Faith" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="icon" href="icons/icon-192.png" type="image/png" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* ---------- Tokens ---------- */
   :root {
     --navy:        #1a2547;
     --navy-deep:   #141c38;
-    --navy-soft:   #2a3560;
     --gold:        #c9a449;
     --gold-light:  #e0c076;
     --gold-soft:   #efe3c4;
     --parchment:   #f5f2ec;
-    --parchment-2: #ebe6d9;
-    --cream:       #faf7f0;
     --card:        #ffffff;
     --ink:         #2b2a26;
     --ink-soft:    #6b6a63;
@@ -27,9 +32,34 @@
     --line:        #e8e4d9;
     --shadow-sm:   0 1px 2px rgba(26,37,71,0.06);
     --shadow-md:   0 4px 14px rgba(26,37,71,0.08);
-    --shadow-lg:   0 12px 32px rgba(26,37,71,0.18);
-    --shadow-gold: 0 8px 20px rgba(201,164,73,0.35);
+    --nav-height:  90px;
   }
+
+  /* ---------- Dark mode ---------- */
+  [data-theme="dark"] {
+    --parchment:  #0d1628;
+    --card:       #1a2547;
+    --ink:        #ede9df;
+    --ink-soft:   #9aa3c0;
+    --ink-mute:   #5a6485;
+    --line:       #243058;
+    --gold-soft:  rgba(201,164,73,0.18);
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.5);
+    --shadow-md:  0 4px 14px rgba(0,0,0,0.6);
+  }
+  [data-theme="dark"] body { background: var(--parchment); }
+  [data-theme="dark"] .app { background: var(--parchment); }
+  [data-theme="dark"] .verse-card,
+  [data-theme="dark"] .answer-card {
+    background: var(--card);
+    border-color: var(--line);
+  }
+  [data-theme="dark"] .nav-bg path { fill: #1a2547; }
+  [data-theme="dark"] #ai-input-bar { background: var(--parchment); }
+  [data-theme="dark"] .nav-item.active { color: #ffffff; }
+  [data-theme="dark"] .nav-item.active svg { stroke: #ffffff; }
+  [data-theme="dark"] .nav-center .label { color: var(--ink); }
+  [data-theme="dark"] .nav-item { color: var(--ink-mute); }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
@@ -46,7 +76,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Subtle parchment grain texture */
   body::before {
     content: '';
     position: fixed;
@@ -58,7 +87,6 @@
     z-index: 0;
   }
 
-  /* ---------- App Shell ---------- */
   .app {
     position: relative;
     width: 100%;
@@ -88,7 +116,6 @@
     transition: opacity .32s ease, transform .32s ease, visibility 0s;
   }
 
-  /* ---------- Header (navy) ---------- */
   .header {
     background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
     color: #fff;
@@ -158,11 +185,7 @@
     font-weight: 400;
   }
 
-  /* AI Chat header variant */
-  .header-chat {
-    text-align: center;
-    padding-bottom: 28px;
-  }
+  .header-chat { text-align: center; padding-bottom: 28px; }
   .header-chat .eyebrow {
     font-size: 10px;
     letter-spacing: 0.28em;
@@ -179,14 +202,12 @@
     letter-spacing: -0.01em;
   }
   .header-chat .sub {
-    font-size: 12.5px;
-    color: rgba(255,255,255,0.6);
     font-style: italic;
     font-family: 'Cormorant Garamond', serif;
     font-size: 15px;
+    color: rgba(255,255,255,0.6);
   }
 
-  /* ---------- Scroll area ---------- */
   .scroll {
     flex: 1;
     overflow-y: auto;
@@ -197,7 +218,6 @@
   }
   .scroll::-webkit-scrollbar { display: none; }
 
-  /* ---------- Cards ---------- */
   .card {
     background: var(--card);
     border-radius: 16px;
@@ -206,8 +226,6 @@
     border: 1px solid var(--line);
     margin-bottom: 14px;
   }
-
-  /* Verse card */
   .verse-card {
     background: linear-gradient(135deg, #fff 0%, #fdfaf1 100%);
     border: 1px solid var(--gold-soft);
@@ -223,11 +241,7 @@
     gap: 6px;
     margin-bottom: 10px;
   }
-  .card-label::before {
-    content: '✦';
-    font-size: 11px;
-    color: var(--gold);
-  }
+  .card-label::before { content: '✦'; font-size: 11px; color: var(--gold); }
   .verse-text {
     font-family: 'Cormorant Garamond', serif;
     font-size: 19px;
@@ -245,24 +259,11 @@
     letter-spacing: 0.04em;
   }
 
-  /* Feast day card */
-  .feast-card {
-    display: flex;
-    padding: 0;
-    overflow: hidden;
-    min-height: 108px;
-  }
+  .feast-card { display: flex; padding: 0; overflow: hidden; min-height: 108px; }
   .feast-art {
     width: 108px;
     flex-shrink: 0;
-    background:
-      repeating-linear-gradient(
-        45deg,
-        var(--gold-soft) 0px,
-        var(--gold-soft) 8px,
-        #f5e9c8 8px,
-        #f5e9c8 16px
-      );
+    background: repeating-linear-gradient(45deg, var(--gold-soft) 0px, var(--gold-soft) 8px, #f5e9c8 8px, #f5e9c8 16px);
     position: relative;
     display: grid;
     place-items: center;
@@ -276,13 +277,7 @@
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%);
   }
-  .feast-body {
-    padding: 16px 18px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
+  .feast-body { padding: 16px 18px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .feast-label {
     font-size: 10px;
     font-weight: 700;
@@ -298,18 +293,9 @@
     color: var(--ink);
     margin: 0 0 2px;
   }
-  .feast-title {
-    font-size: 12.5px;
-    color: var(--ink-soft);
-  }
+  .feast-title { font-size: 12.5px; color: var(--ink-soft); }
 
-  /* Two-col actions */
-  .actions-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
+  .actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
   .action-card {
     background: var(--card);
     border-radius: 16px;
@@ -332,17 +318,8 @@
     align-items: center;
     gap: 5px;
   }
-  .action-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ink);
-    margin: 0 0 2px;
-    line-height: 1.2;
-  }
-  .action-meta {
-    font-size: 11.5px;
-    color: var(--ink-soft);
-  }
+  .action-title { font-size: 14px; font-weight: 600; color: var(--ink); margin: 0 0 2px; line-height: 1.2; }
+  .action-meta { font-size: 11.5px; color: var(--ink-soft); }
   .btn {
     margin-top: 10px;
     padding: 9px 16px;
@@ -352,27 +329,13 @@
     border: none;
     cursor: pointer;
     font-family: inherit;
-    transition: transform .15s ease, box-shadow .15s ease;
-    letter-spacing: 0.01em;
+    transition: transform .15s ease;
   }
   .btn:active { transform: scale(0.96); }
-  .btn-gold {
-    background: var(--gold);
-    color: #fff;
-    box-shadow: 0 2px 6px rgba(201,164,73,0.3);
-  }
-  .btn-gold:hover { background: var(--gold-light); }
-  .btn-outline {
-    background: transparent;
-    color: var(--navy);
-    border: 1.5px solid var(--navy);
-  }
-  .btn-outline:hover { background: var(--navy); color: #fff; }
+  .btn-gold { background: var(--gold); color: #fff; box-shadow: 0 2px 6px rgba(201,164,73,0.3); }
+  .btn-outline { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
 
-  /* Mass card */
-  .mass-card {
-    padding: 16px 18px;
-  }
+  .mass-card { padding: 16px 18px; }
   .mass-head {
     font-size: 10px;
     font-weight: 700;
@@ -384,10 +347,7 @@
     align-items: center;
     gap: 6px;
   }
-  .mass-head::before {
-    content: '📍';
-    font-size: 12px;
-  }
+  .mass-head::before { content: '📍'; font-size: 12px; }
   .mass-item {
     display: flex;
     justify-content: space-between;
@@ -397,10 +357,7 @@
     border-bottom: 1px dashed var(--line);
   }
   .mass-item:last-child { border-bottom: none; }
-  .mass-item .time {
-    color: var(--ink-soft);
-    font-weight: 500;
-  }
+  .mass-item .time { color: var(--ink-soft); font-weight: 500; }
 
   /* ---------- Bottom Nav ---------- */
   .nav {
@@ -413,9 +370,8 @@
     justify-content: space-around;
     padding: 14px 12px calc(16px + env(safe-area-inset-bottom, 0px));
     background: transparent;
-    z-index: 10;
+    z-index: 20;
   }
-  /* SVG notched background layer */
   .nav-bg {
     position: absolute;
     left: 0;
@@ -426,12 +382,7 @@
     pointer-events: none;
     filter: drop-shadow(0 -6px 16px rgba(26,37,71,0.08)) drop-shadow(0 -1px 0 rgba(26,37,71,0.05));
   }
-  .nav-bg svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    overflow: visible;
-  }
+  .nav-bg svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .nav-item {
     background: none;
     border: none;
@@ -450,15 +401,10 @@
     z-index: 2;
   }
   .nav-item svg { width: 22px; height: 22px; }
-  .nav-item .label {
-    font-size: 10.5px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
+  .nav-item .label { font-size: 10.5px; font-weight: 500; letter-spacing: 0.02em; }
   .nav-item.active { color: var(--navy); }
   .nav-item.active svg { stroke: var(--navy); }
 
-  /* Raised center button — sits in the SVG notch */
   .nav-center {
     position: relative;
     flex: 0 0 auto;
@@ -468,6 +414,7 @@
     gap: 4px;
     margin: 0 6px;
     z-index: 2;
+    cursor: pointer;
   }
   .nav-center-btn {
     width: 62px;
@@ -475,10 +422,7 @@
     border-radius: 50%;
     background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 60%, #b38d38 100%);
     border: none;
-    box-shadow:
-      0 10px 24px rgba(201,164,73,0.4),
-      0 4px 10px rgba(26,37,71,0.18),
-      inset 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow: 0 10px 24px rgba(201,164,73,0.4), 0 4px 10px rgba(26,37,71,0.18), inset 0 1px 0 rgba(255,255,255,0.5);
     display: grid;
     place-items: center;
     cursor: pointer;
@@ -495,18 +439,15 @@
     letter-spacing: 0.02em;
   }
   .nav-center.active .nav-center-btn {
-    box-shadow:
-      0 12px 30px rgba(201,164,73,0.55),
-      0 2px 6px rgba(26,37,71,0.2),
-      inset 0 1px 0 rgba(255,255,255,0.55);
+    box-shadow: 0 12px 30px rgba(201,164,73,0.55), 0 2px 6px rgba(26,37,71,0.2), inset 0 1px 0 rgba(255,255,255,0.55);
   }
 
-  /* ---------- AI Chat Screen ---------- */
+  /* ---------- AI Chat ---------- */
   .chat-body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 18px 20px 0;
+    padding: 18px 20px 20px;
     overflow-y: auto;
     scrollbar-width: none;
   }
@@ -537,10 +478,7 @@
     white-space: nowrap;
     transition: all .2s ease;
   }
-  .chip:hover {
-    border-color: var(--gold);
-    color: var(--navy);
-  }
+  .chip:hover { border-color: var(--gold); color: var(--navy); }
 
   .bubble-user {
     align-self: flex-end;
@@ -554,6 +492,7 @@
     margin: 14px 0 8px;
     box-shadow: var(--shadow-sm);
     line-height: 1.45;
+    word-wrap: break-word;
   }
 
   .answer-card {
@@ -565,6 +504,7 @@
     padding: 16px 18px;
     margin-bottom: 10px;
     box-shadow: var(--shadow-sm);
+    word-wrap: break-word;
   }
   .answer-label {
     font-size: 10px;
@@ -582,67 +522,36 @@
     font-size: 14px;
     line-height: 1.55;
     color: var(--ink);
-    margin: 0 0 12px;
-  }
-  .answer-cite {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--gold-soft);
-    color: #8a6d24;
-    padding: 5px 10px;
-    border-radius: 6px;
-    font-size: 11.5px;
-    font-weight: 600;
-    margin-bottom: 12px;
-  }
-  .answer-actions {
-    display: flex;
-    gap: 8px;
-  }
-  .pill {
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 11.5px;
-    font-weight: 600;
-    border: 1px solid var(--line);
-    background: var(--card);
-    color: var(--ink);
-    cursor: pointer;
-    font-family: inherit;
-    transition: all .2s ease;
-  }
-  .pill:hover { border-color: var(--gold); }
-  .pill-gold {
-    background: var(--gold-soft);
-    border-color: transparent;
-    color: #8a6d24;
+    margin: 0;
+    white-space: pre-wrap;
   }
 
-  /* Chat input */
+  /* AI input bar — flex child of the AI screen, sits above nav */
   .chat-input-wrap {
-    padding: 10px 18px 18px;
+    flex-shrink: 0;
+    padding: 12px 18px 14px;
     background: var(--parchment);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -6px 20px rgba(26,37,71,0.06);
     position: relative;
     z-index: 5;
+    /* JS measures the nav and sets --nav-h; extra 20px gives breathing room */
+    margin-bottom: calc(var(--nav-h, 90px) + 20px);
   }
-  .chat-input-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
+  .chat-input-row { display: flex; gap: 10px; align-items: center; }
   .chat-input {
     flex: 1;
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 999px;
     padding: 13px 18px;
-    font-size: 14px;
+    font-size: 16px; /* prevents iOS zoom-on-focus */
     font-family: inherit;
     color: var(--ink);
     outline: none;
     transition: border-color .2s ease;
     box-shadow: var(--shadow-sm);
+    min-width: 0;
   }
   .chat-input:focus { border-color: var(--gold); }
   .chat-input::placeholder { color: var(--ink-mute); }
@@ -658,17 +567,17 @@
     cursor: pointer;
     box-shadow: var(--shadow-md);
     flex-shrink: 0;
-    transition: transform .15s ease;
+    transition: transform .15s ease, opacity .15s ease;
   }
   .send-btn:active { transform: scale(0.92); }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .send-btn svg { width: 18px; height: 18px; }
 
-  /* Simple placeholder screens */
   .placeholder {
     flex: 1;
     display: grid;
     place-items: center;
-    padding: 40px 30px;
+    padding: 40px 30px 140px;
     text-align: center;
   }
   .placeholder-icon {
@@ -697,7 +606,273 @@
     line-height: 1.5;
   }
 
-  /* fade-in stagger on home load */
+  /* ---------- Settings screen ---------- */
+  .settings-section { margin-bottom: 24px; }
+  .settings-group-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 0 4px;
+    margin-bottom: 8px;
+  }
+  .settings-card {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    gap: 16px;
+  }
+  .settings-row + .settings-row { border-top: 1px solid var(--line); }
+  .settings-row-title {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .settings-row-sub {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .toggle {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    flex-shrink: 0;
+  }
+  .toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--line);
+    cursor: pointer;
+    transition: background 0.25s ease;
+  }
+  .toggle input:checked + .toggle-track { background: var(--gold); }
+  .toggle-thumb {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    top: 3px;
+    left: 3px;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    transition: transform 0.25s ease;
+  }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(22px); }
+
+  /* ---------- Pray Grid ---------- */
+  .pray-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 20px 20px 140px;
+  }
+  .pray-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform .15s ease, box-shadow .15s ease;
+    text-align: left;
+  }
+  .pray-card:active { transform: scale(0.97); box-shadow: none; }
+  .pray-card-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--gold-soft);
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .pray-card-title { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.25; margin: 0; }
+  .pray-card-meta { font-size: 11px; color: var(--ink-mute); }
+  .pray-card.featured {
+    grid-column: span 2;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(135deg, #fff 0%, #fdfaf1 100%);
+    border-color: var(--gold-soft);
+  }
+  [data-theme="dark"] .pray-card.featured { background: var(--card); }
+  .pray-card.featured .pray-card-icon {
+    width: 52px; height: 52px; font-size: 24px;
+  }
+
+  /* ---------- Saints Screen ---------- */
+  .saint-today-card {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 14px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .saint-today-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 20%, rgba(201,164,73,0.15) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .saint-today-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
+    color: var(--gold-light); text-transform: uppercase; margin-bottom: 10px;
+  }
+  .saint-today-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 600; line-height: 1.1; margin: 0 0 4px;
+  }
+  .saint-today-title { font-size: 13px; color: rgba(255,255,255,0.65); margin: 0 0 14px; }
+  .saint-bio-card {
+    background: var(--card);
+    border-radius: 16px; padding: 18px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm); margin-bottom: 14px;
+  }
+  .saint-bio-text { font-size: 13.5px; color: var(--ink-soft); line-height: 1.65; margin: 0; }
+  .saints-list-label {
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gold);
+    padding: 0 4px; margin: 4px 0 10px;
+  }
+  .saint-row {
+    background: var(--card); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 8px;
+    border: 1px solid var(--line);
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: transform .15s ease;
+  }
+  .saint-row:active { transform: scale(0.98); }
+  .saint-row-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--gold-soft); display: grid; place-items: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .saint-row-name { font-size: 14px; font-weight: 600; color: var(--ink); margin: 0 0 2px; }
+  .saint-row-dates { font-size: 11.5px; color: var(--ink-mute); }
+
+  /* ---------- Content Modal ---------- */
+  .cmodal {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; align-items: flex-end;
+    pointer-events: none; opacity: 0;
+    transition: opacity .3s ease;
+  }
+  .cmodal.open { pointer-events: all; opacity: 1; }
+  .cmodal-overlay {
+    position: absolute; inset: 0;
+    background: rgba(13,22,40,0.6);
+    backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+  }
+  .cmodal-sheet {
+    position: relative; width: 100%; max-width: 480px;
+    margin: 0 auto; background: var(--card);
+    border-radius: 24px 24px 0 0;
+    max-height: 88vh; max-height: 88dvh;
+    display: flex; flex-direction: column;
+    transform: translateY(40px); transition: transform .3s ease;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .cmodal.open .cmodal-sheet { transform: translateY(0); }
+  .cmodal-handle {
+    width: 40px; height: 4px; border-radius: 999px;
+    background: var(--line); margin: 12px auto 0; flex-shrink: 0;
+  }
+  .cmodal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px 14px; flex-shrink: 0; border-bottom: 1px solid var(--line);
+  }
+  .cmodal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; color: var(--ink);
+  }
+  .cmodal-close {
+    background: none; border: none; font-size: 18px;
+    color: var(--ink-mute); cursor: pointer;
+    padding: 4px 8px; border-radius: 8px; font-family: inherit;
+    line-height: 1; transition: color .15s ease;
+  }
+  .cmodal-close:hover { color: var(--ink); }
+  .cmodal-body {
+    flex: 1; overflow-y: auto; padding: 20px 24px 24px;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .cmodal-body::-webkit-scrollbar { display: none; }
+
+  /* Rosary progress dots */
+  .rosary-progress {
+    display: flex; justify-content: center; gap: 6px;
+    padding: 10px 24px 4px; flex-shrink: 0; flex-wrap: wrap;
+  }
+  .rosary-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--line); transition: background .25s ease, transform .25s ease;
+  }
+  .rosary-dot.active { background: var(--gold); transform: scale(1.3); }
+  .rosary-nav {
+    display: flex; gap: 10px;
+    padding: 12px 24px 16px; flex-shrink: 0;
+    border-top: 1px solid var(--line);
+  }
+  .rosary-nav .btn { flex: 1; padding: 12px; font-size: 13.5px; }
+  .rosary-nav .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* Skeleton loader */
+  @keyframes shimmer {
+    0%   { background-position: -400px 0; }
+    100% { background-position:  400px 0; }
+  }
+  .skel {
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--line) 25%, var(--gold-soft) 50%, var(--line) 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.4s infinite;
+    color: transparent !important;
+    user-select: none;
+  }
+
+  @keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.85); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+  .typing-dots { display: flex; align-items: center; gap: 5px; padding: 4px 0; }
+  .typing-dots span {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: blink 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
   .fade-in > * {
     opacity: 0;
     transform: translateY(8px);
@@ -707,15 +882,13 @@
   .fade-in > *:nth-child(2) { animation-delay: .12s; }
   .fade-in > *:nth-child(3) { animation-delay: .19s; }
   .fade-in > *:nth-child(4) { animation-delay: .26s; }
-  @keyframes rise {
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- =================== HOME =================== -->
+  <!-- HOME -->
   <section class="screen active" data-screen="home">
     <header class="header">
       <div class="header-top">
@@ -732,14 +905,12 @@
     </header>
 
     <div class="scroll fade-in">
-      <!-- Verse -->
       <div class="card verse-card">
         <div class="card-label">Verse of the Day</div>
         <p class="verse-text">The Lord is my shepherd; I shall not want. He maketh me to lie down in green pastures.</p>
         <div class="verse-cite">— Psalm 23:1</div>
       </div>
 
-      <!-- Feast -->
       <div class="card feast-card">
         <div class="feast-art" aria-hidden="true"></div>
         <div class="feast-body">
@@ -749,12 +920,9 @@
         </div>
       </div>
 
-      <!-- Actions row -->
       <div class="actions-row">
         <div class="action-card">
-          <div>
-            <div class="action-head">🙏 Morning Prayer</div>
-          </div>
+          <div><div class="action-head">🙏 Morning Prayer</div></div>
           <button class="btn btn-gold">Begin</button>
         </div>
         <div class="action-card">
@@ -767,7 +935,6 @@
         </div>
       </div>
 
-      <!-- Mass -->
       <div class="card mass-card">
         <div class="mass-head">Mass near you</div>
         <div class="mass-item"><span>St. Mary's</span><span class="time">8:00 AM</span></div>
@@ -776,7 +943,7 @@
     </div>
   </section>
 
-  <!-- =================== AI CHAT =================== -->
+  <!-- AI CHAT -->
   <section class="screen" data-screen="ai">
     <header class="header header-chat">
       <div class="eyebrow">Catholic AI</div>
@@ -784,33 +951,20 @@
       <div class="sub">Grounded in Church teaching</div>
     </header>
 
-    <div class="chat-body">
-      <div class="suggestions">
+    <div class="chat-body" id="chat-messages">
+      <div class="suggestions" id="suggestions">
         <button class="chip">What is the Rosary?</button>
         <button class="chip">Today's Gospel</button>
-        <button class="chip">Go to Confession</button>
+        <button class="chip">How to go to Confession</button>
         <button class="chip">Saint of the day</button>
-      </div>
-
-      <div class="bubble-user">What is the Immaculate Conception?</div>
-
-      <div class="answer-card">
-        <div class="answer-label">Faith Answer</div>
-        <p class="answer-text">
-          The Immaculate Conception is the doctrine that the Blessed Virgin Mary, from the first moment of her conception, was preserved free from all stain of original sin by a singular grace of God in view of the merits of Christ.
-        </p>
-        <div class="answer-cite">📖 CCC 491–493</div>
-        <div class="answer-actions">
-          <button class="pill pill-gold">Read more</button>
-          <button class="pill">Save</button>
-        </div>
       </div>
     </div>
 
+    <!-- Input bar lives INSIDE the AI screen — only visible when AI is active -->
     <div class="chat-input-wrap">
       <div class="chat-input-row">
-        <input class="chat-input" placeholder="Ask a faith question…" />
-        <button class="send-btn" aria-label="Send">
+        <input id="chat-input" class="chat-input" placeholder="Ask a faith question…" autocomplete="off" />
+        <button id="send-btn" class="send-btn" aria-label="Send">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 19V5"/>
             <path d="m5 12 7-7 7 7"/>
@@ -820,7 +974,7 @@
     </div>
   </section>
 
-  <!-- =================== PRAY =================== -->
+  <!-- PRAY -->
   <section class="screen" data-screen="pray">
     <header class="header">
       <div class="header-top">
@@ -849,7 +1003,7 @@
     </div>
   </section>
 
-  <!-- =================== SAINTS =================== -->
+  <!-- SAINTS -->
   <section class="screen" data-screen="saints">
     <header class="header">
       <div class="header-top">
@@ -877,7 +1031,7 @@
     </div>
   </section>
 
-  <!-- =================== MORE =================== -->
+  <!-- MORE -->
   <section class="screen" data-screen="more">
     <header class="header">
       <div class="header-top">
@@ -892,39 +1046,51 @@
       <h1 class="greeting">Settings & more</h1>
       <p class="subgreet">Customize your daily walk</p>
     </header>
-    <div class="placeholder">
-      <div>
-        <div class="placeholder-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
+    <div class="scroll">
+
+      <div class="settings-section">
+        <div class="settings-group-label">Appearance</div>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-title">Dark Mode</div>
+              <div class="settings-row-sub">Easy on the eyes at night</div>
+            </div>
+            <label class="toggle" aria-label="Toggle dark mode">
+              <input type="checkbox" id="dark-mode-toggle" />
+              <span class="toggle-track"></span>
+              <span class="toggle-thumb"></span>
+            </label>
+          </div>
         </div>
-        <h2>Settings</h2>
-        <p>Account, notifications, reading plans, and preferences.</p>
       </div>
+
+      <div class="settings-section">
+        <div class="settings-group-label">About</div>
+        <div class="settings-card">
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-title">Daily Faith</div>
+              <div class="settings-row-sub">Made by William Cain · v1.0</div>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-title">AI Powered by</div>
+              <div class="settings-row-sub">OpenAI · Catholic teaching grounded</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <!-- =================== BOTTOM NAV =================== -->
+  <!-- BOTTOM NAV -->
   <nav class="nav">
     <div class="nav-bg" aria-hidden="true">
       <svg viewBox="0 -40 400 140" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <!--
-          Wide, gentle hump that cradles the button.
-          Lower peak (-18) so the bulge edge sits closer to the button's
-          lower curve instead of rising too far up its sides.
-        -->
-        <path d="
-          M0,0
-          L120,0
-          C165,0 165,-18 200,-18
-          C235,-18 235,0 280,0
-          L400,0
-          L400,100
-          L0,100
-          Z
-        " fill="#ffffff"/>
+        <path d="M0,0 L120,0 C165,0 165,-18 200,-18 C235,-18 235,0 280,0 L400,0 L400,100 L0,100 Z" fill="#ffffff"/>
       </svg>
     </div>
 
@@ -943,7 +1109,7 @@
       <span class="label">Pray</span>
     </button>
 
-    <div class="nav-center active" data-nav="ai">
+    <div class="nav-center" data-nav="ai">
       <button class="nav-center-btn" aria-label="Ask AI">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2l2.09 6.26L20 10l-5.91 2.74L12 19l-2.09-6.26L4 10l5.91-1.74L12 2z"/>
@@ -971,31 +1137,188 @@
 </div>
 
 <script>
-  // Nav switching
+  // ---- Configuration ----
+  const API_URL = 'https://project-veritas-backend.onrender.com/chat';
+
+  // ---- Nav switching ----
   const navItems = document.querySelectorAll('[data-nav]');
-  const screens = document.querySelectorAll('.screen');
+  const screens  = document.querySelectorAll('.screen');
+
+  function switchTo(target) {
+    navItems.forEach(n => n.classList.remove('active'));
+    const navItem = [...navItems].find(n => n.dataset.nav === target);
+    if (navItem) navItem.classList.add('active');
+    screens.forEach(s => s.classList.toggle('active', s.dataset.screen === target));
+  }
 
   navItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const target = item.dataset.nav;
-
-      navItems.forEach(n => n.classList.remove('active'));
-      item.classList.add('active');
-
-      screens.forEach(s => {
-        s.classList.toggle('active', s.dataset.screen === target);
-      });
-    });
+    item.addEventListener('click', () => switchTo(item.dataset.nav));
   });
 
-  // Suggestion chips populate input
+  // ---- AI Chat ----
+  const chatMessages = document.getElementById('chat-messages');
+  const chatInput    = document.getElementById('chat-input');
+  const sendBtn      = document.getElementById('send-btn');
+  const suggestions  = document.getElementById('suggestions');
+
+  let isSending = false;
+
+  function getSessionId() {
+    let id;
+    try { id = localStorage.getItem('faithSessionId'); } catch (e) {}
+    if (!id) {
+      id = (crypto.randomUUID && crypto.randomUUID()) ||
+           (Date.now() + '-' + Math.random().toString(36).slice(2));
+      try { localStorage.setItem('faithSessionId', id); } catch (e) {}
+    }
+    return id;
+  }
+
+  function scrollToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function appendUserMessage(text) {
+    const div = document.createElement('div');
+    div.className = 'bubble-user';
+    div.textContent = text;
+    chatMessages.appendChild(div);
+    scrollToBottom();
+  }
+
+  function appendBotCard() {
+    const card = document.createElement('div');
+    card.className = 'answer-card';
+    card.innerHTML = '<div class="answer-label">Faith Answer</div><p class="answer-text"></p>';
+    chatMessages.appendChild(card);
+    scrollToBottom();
+    return card.querySelector('.answer-text');
+  }
+
+  function showTyping() {
+    const card = document.createElement('div');
+    card.className = 'answer-card';
+    card.id = 'typing-indicator';
+    card.innerHTML = '<div class="answer-label">Faith Answer</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+    chatMessages.appendChild(card);
+    scrollToBottom();
+  }
+
+  function removeTyping() {
+    const t = document.getElementById('typing-indicator');
+    if (t) t.remove();
+  }
+
+  function typeText(el, text, speed = 14) {
+    let i = 0;
+    el.textContent = '';
+    return new Promise(resolve => {
+      (function step() {
+        if (i < text.length) {
+          el.textContent += text[i++];
+          scrollToBottom();
+          setTimeout(step, speed);
+        } else {
+          resolve();
+        }
+      })();
+    });
+  }
+
+  async function sendMessage() {
+    if (isSending) return;
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    isSending = true;
+    sendBtn.disabled = true;
+
+    if (suggestions) suggestions.style.display = 'none';
+
+    appendUserMessage(message);
+    chatInput.value = '';
+    showTyping();
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, sessionId: getSessionId() })
+      });
+
+      removeTyping();
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        await typeText(appendBotCard(), `Sorry, the server returned an error (${res.status}). ${errText}`.trim());
+      } else {
+        const data = await res.json();
+        const reply = data.reply || data.message || data.response || 'No response received.';
+        await typeText(appendBotCard(), reply);
+      }
+    } catch (err) {
+      removeTyping();
+      appendBotCard().textContent = 'Unable to reach the server. Please check your connection and try again.';
+      console.error('Chat error:', err);
+    } finally {
+      isSending = false;
+      sendBtn.disabled = false;
+    }
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Tapping a chip switches to AI screen and sends
   document.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      const input = document.querySelector('.chat-input');
-      input.value = chip.textContent;
-      input.focus();
+      switchTo('ai');
+      chatInput.value = chip.textContent;
+      sendMessage();
     });
   });
+
+  // ---- Measure nav height so input bar sits exactly above it ----
+  function updateNavHeight() {
+    const nav = document.querySelector('.nav');
+    if (nav) {
+      const h = nav.getBoundingClientRect().height;
+      document.documentElement.style.setProperty('--nav-h', h + 'px');
+    }
+  }
+  window.addEventListener('load', updateNavHeight);
+  window.addEventListener('resize', updateNavHeight);
+  updateNavHeight();
+
+  // ---- Dark mode ----
+  const darkToggle = document.getElementById('dark-mode-toggle');
+
+  function applyTheme(dark) {
+    document.documentElement.dataset.theme = dark ? 'dark' : '';
+    darkToggle.checked = dark;
+  }
+
+  applyTheme(localStorage.getItem('darkMode') === 'true');
+
+  darkToggle.addEventListener('change', () => {
+    const isDark = darkToggle.checked;
+    localStorage.setItem('darkMode', isDark);
+    applyTheme(isDark);
+  });
+
+  // ---- Service Worker (only on http/https, not file://) ----
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('[Lumen] SW registered'))
+        .catch(err => console.warn('[Lumen] SW failed:', err));
+    });
+  }
 </script>
 </body>
 </html>
