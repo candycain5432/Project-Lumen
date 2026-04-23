@@ -359,6 +359,8 @@
   }
   .mass-item:last-child { border-bottom: none; }
   .mass-item .time { color: var(--ink-soft); font-weight: 500; }
+  .mass-item.clickable { cursor: pointer; transition: background .15s; border-radius: 6px; padding: 7px 4px; margin: 0 -4px; }
+  .mass-item.clickable:active { background: var(--line); }
 
   /* ---------- Bottom Nav ---------- */
   .nav {
@@ -940,9 +942,10 @@
       </div>
 
       <div class="card mass-card">
-        <div class="mass-head">Mass near you</div>
-        <div class="mass-item"><span>St. Mary's</span><span class="time">8:00 AM</span></div>
-        <div class="mass-item"><span>Holy Cross</span><span class="time">10:30 AM</span></div>
+        <div class="mass-head">Catholic Churches Near You</div>
+        <div id="mass-content">
+          <button class="btn btn-gold" onclick="loadNearbyChurches()" style="width:100%;margin-top:2px">Find Churches Near Me</button>
+        </div>
       </div>
     </div>
   </section>
@@ -1921,6 +1924,103 @@
       `<p style="font-size:14px;line-height:1.7;color:var(--ink-soft)">${bio}</p>`,
       false);
   }
+
+  // ---- Nearby Churches (Overpass / OpenStreetMap) ----
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 3958.8;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2)**2 +
+              Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function renderChurches(churches) {
+    const content = document.getElementById('mass-content');
+    if (!content) return;
+    if (!churches.length) {
+      content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">No Catholic churches found within 5 miles.</p>';
+      return;
+    }
+    content.innerHTML = churches.map(c =>
+      `<div class="mass-item clickable" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name)}+${encodeURIComponent(c.addr)}','_blank')">
+        <span>${c.name}</span>
+        <span class="time">${c.dist < 0.1 ? '<0.1' : c.dist.toFixed(1)} mi</span>
+      </div>`
+    ).join('');
+  }
+
+  async function loadNearbyChurches() {
+    const content = document.getElementById('mass-content');
+    if (!content) return;
+    content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Getting your location…</p>';
+
+    let lat, lon;
+    try {
+      const pos = await new Promise((res, rej) =>
+        navigator.geolocation.getCurrentPosition(res, rej, { timeout: 10000 })
+      );
+      lat = pos.coords.latitude;
+      lon = pos.coords.longitude;
+      localStorage.setItem('churchLat', lat);
+      localStorage.setItem('churchLon', lon);
+    } catch (err) {
+      content.innerHTML = err.code === 1
+        ? '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Location access denied — enable it in browser settings.</p>'
+        : '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Could not get location. Try again.</p>';
+      return;
+    }
+
+    content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Finding nearby churches…</p>';
+
+    try {
+      const query =
+        `[out:json][timeout:12];` +
+        `(node["amenity"="place_of_worship"]["religion"="christian"]["denomination"="catholic"](around:8000,${lat},${lon});` +
+        ` way["amenity"="place_of_worship"]["religion"="christian"]["denomination"="catholic"](around:8000,${lat},${lon});` +
+        ` node["amenity"="place_of_worship"]["religion"="christian"]["denomination"="roman_catholic"](around:8000,${lat},${lon});` +
+        ` way["amenity"="place_of_worship"]["religion"="christian"]["denomination"="roman_catholic"](around:8000,${lat},${lon}););` +
+        `out center 8;`;
+
+      const r = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        body: query
+      });
+      const data = await r.json();
+
+      const churches = (data.elements || [])
+        .map(el => {
+          const elLat = el.lat ?? el.center?.lat;
+          const elLon = el.lon ?? el.center?.lon;
+          if (!elLat || !elLon) return null;
+          const name = el.tags?.name || 'Catholic Church';
+          const addr = [el.tags?.['addr:street'], el.tags?.['addr:city']].filter(Boolean).join(', ');
+          return { name, addr, dist: haversine(lat, lon, elLat, elLon) };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.dist - b.dist)
+        .slice(0, 4);
+
+      // Cache results for 24 h
+      localStorage.setItem('churchCache', JSON.stringify({ ts: Date.now(), churches }));
+      renderChurches(churches);
+    } catch {
+      content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Could not load churches. Check your connection.</p>';
+    }
+  }
+
+  // Auto-load from cache if fresh (< 24 h), or silently re-fetch if location already granted
+  (async () => {
+    const raw = localStorage.getItem('churchCache');
+    if (raw) {
+      try {
+        const { ts, churches } = JSON.parse(raw);
+        if (Date.now() - ts < 86400000) { renderChurches(churches); return; }
+      } catch {}
+    }
+    // Re-fetch quietly if we already have coordinates saved
+    if (localStorage.getItem('churchLat')) loadNearbyChurches();
+  })();
 
   // ---- Init ----
   loadHomeData();
