@@ -1979,6 +1979,7 @@
       notifSub.textContent = 'Push notifications are not supported in this browser';
       return;
     }
+    notifSub.textContent = 'Requesting permission…';
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
       notifToggle.checked = false;
@@ -1986,23 +1987,30 @@
       return;
     }
     try {
-      const reg = await navigator.serviceWorker.ready;
+      notifSub.textContent = 'Waiting for service worker…';
+      const reg = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, rej) => setTimeout(() => rej(new Error('Service worker timed out — try reloading the app')), 8000))
+      ]);
+      notifSub.textContent = 'Subscribing to push…';
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
       });
-      await fetch('https://project-veritas-backend.onrender.com/subscribe', {
+      notifSub.textContent = 'Saving to server…';
+      const resp = await fetch('https://project-veritas-backend.onrender.com/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(sub)
       });
+      if (!resp.ok) throw new Error(`Server error ${resp.status}`);
       localStorage.setItem('pushEnabled', 'true');
       localStorage.setItem('pushEndpoint', sub.endpoint);
       updateNotifUI(true);
     } catch (err) {
       console.error('Push subscribe failed:', err);
       notifToggle.checked = false;
-      notifSub.textContent = 'Could not enable notifications — try again';
+      notifSub.textContent = `Failed: ${err.message || 'unknown error'} — try again`;
     }
   }
 
@@ -2026,10 +2034,32 @@
 
   // ---- Service Worker (only on http/https, not file://) ----
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(() => console.log('[Lumen] SW registered'))
-        .catch(err => console.warn('[Lumen] SW failed:', err));
+    window.addEventListener('load', async () => {
+      try {
+        await navigator.serviceWorker.register('./service-worker.js');
+        console.log('[Lumen] SW registered');
+      } catch (err) {
+        console.warn('[Lumen] SW failed:', err);
+        return;
+      }
+      // Auto-resubscribe: Render's free tier wipes subscriptions.json on restart,
+      // so re-POST the existing subscription on every app load to stay registered.
+      if (localStorage.getItem('pushEnabled') === 'true') {
+        try {
+          const reg = await navigator.serviceWorker.ready;
+          const sub = await reg.pushManager.getSubscription();
+          if (sub) {
+            await fetch('https://project-veritas-backend.onrender.com/subscribe', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(sub)
+            });
+            console.log('[Lumen] Push subscription refreshed');
+          }
+        } catch (err) {
+          console.warn('[Lumen] Auto-resubscribe failed:', err);
+        }
+      }
     });
   }
 </script>
