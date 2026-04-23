@@ -1939,7 +1939,7 @@
     const content = document.getElementById('mass-content');
     if (!content) return;
     if (!churches.length) {
-      content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">No Catholic churches found within 5 miles.</p>';
+      content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">No Catholic churches found within 10 miles.</p>';
       return;
     }
     content.innerHTML = churches.map(c =>
@@ -1976,10 +1976,10 @@
     try {
       const query =
         `[out:json][timeout:12];` +
-        `(node["amenity"="place_of_worship"]["religion"="christian"]["denomination"="catholic"](around:8000,${lat},${lon});` +
-        ` way["amenity"="place_of_worship"]["religion"="christian"]["denomination"="catholic"](around:8000,${lat},${lon});` +
-        ` node["amenity"="place_of_worship"]["religion"="christian"]["denomination"="roman_catholic"](around:8000,${lat},${lon});` +
-        ` way["amenity"="place_of_worship"]["religion"="christian"]["denomination"="roman_catholic"](around:8000,${lat},${lon}););` +
+        `(node["amenity"="place_of_worship"]["religion"="christian"]["denomination"="catholic"](around:16093,${lat},${lon});` +
+        ` way["amenity"="place_of_worship"]["religion"="christian"]["denomination"="catholic"](around:16093,${lat},${lon});` +
+        ` node["amenity"="place_of_worship"]["religion"="christian"]["denomination"="roman_catholic"](around:16093,${lat},${lon});` +
+        ` way["amenity"="place_of_worship"]["religion"="christian"]["denomination"="roman_catholic"](around:16093,${lat},${lon}););` +
         `out center 8;`;
 
       const r = await fetch('https://overpass-api.de/api/interpreter', {
