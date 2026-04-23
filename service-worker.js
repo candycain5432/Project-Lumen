@@ -1,12 +1,12 @@
-const CACHE_NAME = 'daily-faith-v2';
+const CACHE_NAME = 'daily-faith-v3';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './offline.html',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/icon-192.svg',
+  './icons/icon-512.svg'
 ];
 
 self.addEventListener('install', event => {
@@ -31,8 +31,8 @@ self.addEventListener('push', event => {
   event.waitUntil(
     self.registration.showNotification(data.title || 'Daily Faith', {
       body: data.body || 'Your daily Catholic companion',
-      icon: './icons/icon-192.png',
-      badge: './icons/icon-192.png',
+      icon: './icons/icon-192.svg',
+      badge: './icons/icon-192.svg',
       vibrate: [200, 100, 200],
       data: { url: data.url || './' }
     })
