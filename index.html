@@ -2042,8 +2042,9 @@
         console.warn('[Lumen] SW failed:', err);
         return;
       }
-      // Auto-resubscribe: Render's free tier wipes subscriptions.json on restart,
-      // so re-POST the existing subscription on every app load to stay registered.
+      // Sync push subscription state on every load.
+      // Render free tier wipes subscriptions.json on restart, so re-POST to stay registered.
+      // If browser has no subscription at all, reset the toggle so the user knows to re-enable.
       if (localStorage.getItem('pushEnabled') === 'true') {
         try {
           const reg = await navigator.serviceWorker.ready;
@@ -2054,7 +2055,12 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(sub)
             });
-            console.log('[Lumen] Push subscription refreshed');
+            console.log('[Lumen] Push subscription refreshed on server');
+          } else {
+            // No browser subscription exists — clear stored state and reset UI
+            localStorage.setItem('pushEnabled', 'false');
+            updateNotifUI(false);
+            console.warn('[Lumen] No push subscription found — toggle reset');
           }
         } catch (err) {
           console.warn('[Lumen] Auto-resubscribe failed:', err);
