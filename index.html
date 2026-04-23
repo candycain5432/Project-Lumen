@@ -1875,20 +1875,29 @@
       if (titleEl) titleEl.textContent = feast.rank || feast.season || '';
       currentSaint.name = saintName;
 
-      // Wikipedia bio — CORS-friendly
-      const searchName = saintName
+      // Wikipedia bio — try multiple name forms to avoid disambiguation pages
+      const strippedName = saintName
         .replace(/^(Saints?|Sts?\.|Blesseds?|Bl\.)\s+/i, '')
         .replace(/\s*\(.*?\)/g, '')
         .split(',')[0].split(' and ')[0].trim();
 
+      async function tryWiki(name) {
+        const r = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`);
+        if (!r.ok) return null;
+        const d = await r.json();
+        if (d.type === 'disambiguation' || (d.extract || '').toLowerCase().includes('may refer to')) return null;
+        return d.extract || null;
+      }
+
       if (bioEl) {
         bioEl.textContent = 'Loading biography…';
         try {
-          const wr = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchName)}`);
-          const wd = await wr.json();
-          const extract = wd.extract || '';
-          bioEl.textContent = extract || 'No Wikipedia biography found for this feast.';
-          currentSaint.bio = extract;
+          const bio =
+            await tryWiki('Saint ' + strippedName) ||
+            await tryWiki(strippedName) ||
+            await tryWiki(saintName);
+          bioEl.textContent = bio || 'No Wikipedia biography found for this feast.';
+          currentSaint.bio = bio || '';
         } catch {
           bioEl.textContent = 'Biography unavailable at this time.';
         }
