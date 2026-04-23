@@ -683,7 +683,13 @@
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     padding: 20px 20px 140px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .pray-grid::-webkit-scrollbar { display: none; }
   .pray-card {
     background: var(--card);
     border: 1px solid var(--line);
@@ -1167,7 +1173,7 @@
           <div class="settings-row">
             <div>
               <div class="settings-row-title">Daily Faith</div>
-              <div class="settings-row-sub">Made by William Cain · v2.1</div>
+              <div class="settings-row-sub">Made by William Cain · v1.0</div>
             </div>
           </div>
           <div class="settings-row">
