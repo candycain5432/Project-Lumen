@@ -1938,8 +1938,9 @@
   function renderChurches(churches) {
     const content = document.getElementById('mass-content');
     if (!content) return;
+    const retry = `<button class="btn btn-gold" onclick="loadNearbyChurches()" style="width:100%;margin-top:8px">Search Again</button>`;
     if (!churches.length) {
-      content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">No Catholic churches found within 10 miles.</p>';
+      content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">No Catholic churches found within 10 miles.</p>' + retry;
       return;
     }
     content.innerHTML = churches.map(c =>
@@ -1947,7 +1948,7 @@
         <span>${c.name}</span>
         <span class="time">${c.dist < 0.1 ? '<0.1' : c.dist.toFixed(1)} mi</span>
       </div>`
-    ).join('');
+    ).join('') + retry;
   }
 
   async function loadNearbyChurches() {
