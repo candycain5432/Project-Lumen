@@ -1936,7 +1936,12 @@
 
   async function sendTestNotification() {
     if (!('serviceWorker' in navigator)) return;
-    const now = new Date();
+    // Request permission if not yet granted
+    if (Notification.permission !== 'granted') {
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') return;
+    }
+    const now    = new Date();
     const easter = getEaster(now.getFullYear());
     const feast  = getTodaysFeast(now);
     const litDay = getLiturgicalDayDesc(now, easter);
@@ -1960,6 +1965,8 @@
 
   notifToggle.addEventListener('change', async () => {
     if (notifToggle.checked) {
+      // Show test row immediately so user can test while backend subscribes
+      document.getElementById('notif-test-row').style.display = 'flex';
       await enablePush();
     } else {
       await disablePush();
