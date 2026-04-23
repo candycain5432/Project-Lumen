@@ -2027,7 +2027,7 @@
   // ---- Service Worker (only on http/https, not file://) ----
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
+      navigator.serviceWorker.register('./service-worker.js')
         .then(() => console.log('[Lumen] SW registered'))
         .catch(err => console.warn('[Lumen] SW failed:', err));
     });
