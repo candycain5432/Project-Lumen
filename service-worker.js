@@ -1,4 +1,4 @@
-const CACHE_NAME = 'daily-faith-v4';
+const CACHE_NAME = 'daily-faith-v5';
 
 const STATIC_ASSETS = [
   './',
