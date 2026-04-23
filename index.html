@@ -231,6 +231,19 @@
     background: linear-gradient(135deg, #fff 0%, #fdfaf1 100%);
     border: 1px solid var(--gold-soft);
   }
+  .reflect-card {
+    background: linear-gradient(135deg, #f7f4f0 0%, #fdfaf1 100%);
+    border: 1px solid var(--gold-soft);
+  }
+  .reflect-text {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink);
+    font-style: italic;
+    margin: 4px 0 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+  }
   .card-label {
     font-size: 10px;
     font-weight: 700;
@@ -915,6 +928,11 @@
         <div class="card-label">Verse of the Day</div>
         <p class="verse-text" id="verse-text">The Lord is my shepherd; I shall not want. He maketh me to lie down in green pastures.</p>
         <div class="verse-cite" id="verse-cite">— Psalm 23:1</div>
+      </div>
+
+      <div class="card reflect-card">
+        <div class="card-label">Daily Reflection</div>
+        <p class="reflect-text" id="reflect-text">Loading today's reflection…</p>
       </div>
 
       <div class="card feast-card">
@@ -1814,6 +1832,26 @@
     return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   }
 
+  async function loadDailyReflection() {
+    const el = document.getElementById('reflect-text');
+    if (!el) return;
+    const today = new Date().toDateString();
+    if (localStorage.getItem('reflectionDate') === today) {
+      el.textContent = localStorage.getItem('reflectionText');
+      return;
+    }
+    try {
+      const r = await fetch('https://project-veritas-backend.onrender.com/daily-reflection');
+      if (!r.ok) throw new Error();
+      const { reflection } = await r.json();
+      el.textContent = reflection;
+      localStorage.setItem('reflectionDate', today);
+      localStorage.setItem('reflectionText', reflection);
+    } catch {
+      el.textContent = 'Unable to load reflection. Check your connection.';
+    }
+  }
+
   async function loadHomeData() {
     const now = new Date();
     const hd = document.getElementById('home-date');
@@ -1826,6 +1864,9 @@
     const setName   = getMysterySet() + ' Mysteries';
     if (mystTitle) mystTitle.textContent = setName;
     if (mystMeta)  mystMeta.textContent  = 'Today: ' + setName;
+
+    // Daily reflection (cached per day)
+    loadDailyReflection();
 
     // Verse of the day
     try {
