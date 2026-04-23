@@ -1965,9 +1965,11 @@
       localStorage.setItem('churchLat', lat);
       localStorage.setItem('churchLon', lon);
     } catch (err) {
-      content.innerHTML = err.code === 1
-        ? '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Location access denied — enable it in browser settings.</p>'
-        : '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Could not get location. Try again.</p>';
+      const msg = err.code === 1
+        ? 'Location access denied — enable it in browser settings.'
+        : 'Could not get location. Try again.';
+      content.innerHTML = `<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">${msg}</p>
+        <button class="btn btn-gold" onclick="loadNearbyChurches()" style="width:100%;margin-top:6px">Try Again</button>`;
       return;
     }
 
@@ -2005,7 +2007,8 @@
       localStorage.setItem('churchCache', JSON.stringify({ ts: Date.now(), churches }));
       renderChurches(churches);
     } catch {
-      content.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Could not load churches. Check your connection.</p>';
+      content.innerHTML = `<p style="font-size:13px;color:var(--ink-soft);padding:6px 0">Could not load churches. Check your connection.</p>
+        <button class="btn btn-gold" onclick="loadNearbyChurches()" style="width:100%;margin-top:6px">Try Again</button>`;
     }
   }
 
